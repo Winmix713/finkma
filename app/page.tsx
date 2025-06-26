@@ -1,75 +1,84 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { FigmaGenerator } from "@/components/figma-generator"
-import { FigmaInfoDisplay } from "@/components/figma-info-display"
-import { CodePreview } from "@/code-preview"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Figma, Code, BarChart3, Zap, AlertTriangle } from "lucide-react"
-import { ToastProvider } from "@/components/ui/toast-system"
-import { FigmaErrorBoundary } from "@/components/error-boundary"
-import type { FigmaApiResponse } from "@/types/figma-api"
+import { useState } from "react";
+import { FigmaGenerator } from "@/components/figma-generator";
+import { FigmaInfoDisplay } from "@/components/figma-info-display";
+import { CodePreview } from "@/code-preview";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Figma, Code, BarChart3, Zap, AlertTriangle } from "lucide-react";
+import { ToastProvider } from "@/components/ui/toast-system";
+import { FigmaErrorBoundary } from "@/components/error-boundary";
+import type { FigmaApiResponse } from "@/types/figma-api";
 
 export default function Home() {
-  const [figmaData, setFigmaData] = useState<FigmaApiResponse | null>(null)
-  const [generatedCode, setGeneratedCode] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [figmaData, setFigmaData] = useState<FigmaApiResponse | null>(null);
+  const [generatedCode, setGeneratedCode] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFigmaDataLoad = (data: FigmaApiResponse) => {
     try {
-      setFigmaData(data)
-      setError(null)
+      setFigmaData(data);
+      setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to load Figma data"
-      setError(errorMessage)
-      console.error("Error loading Figma data:", err)
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load Figma data";
+      setError(errorMessage);
+      console.error("Error loading Figma data:", err);
     }
-  }
+  };
 
   const handleCodeGeneration = (code: string) => {
     try {
       if (typeof code !== "string") {
-        throw new Error("Generated code must be a string")
+        throw new Error("Generated code must be a string");
       }
-      setGeneratedCode(code)
+      setGeneratedCode(code);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to generate code"
-      setError(errorMessage)
-      console.error("Error generating code:", err)
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to generate code";
+      setError(errorMessage);
+      console.error("Error generating code:", err);
     }
-  }
+  };
 
   const handleError = (errorMessage: string | Error) => {
     try {
-      const message = errorMessage instanceof Error ? errorMessage.message : errorMessage
-      setError(message)
-      setFigmaData(null)
+      const message =
+        errorMessage instanceof Error ? errorMessage.message : errorMessage;
+      setError(message);
+      setFigmaData(null);
     } catch (err) {
-      console.error("Error handling error:", err)
-      setError("An unexpected error occurred")
+      console.error("Error handling error:", err);
+      setError("An unexpected error occurred");
     }
-  }
+  };
 
   const handleLoadingChange = (loading: boolean) => {
-    setIsLoading(loading)
-  }
+    setIsLoading(loading);
+  };
 
   const handleRefresh = () => {
     try {
-      setError(null)
-      setIsLoading(true)
+      setError(null);
+      setIsLoading(true);
       // Trigger refresh logic here
-      console.log("Refreshing analysis...")
-      setTimeout(() => setIsLoading(false), 1000)
+      console.log("Refreshing analysis...");
+      setTimeout(() => setIsLoading(false), 1000);
     } catch (err) {
-      console.error("Error during refresh:", err)
-      setError("Failed to refresh data")
-      setIsLoading(false)
+      console.error("Error during refresh:", err);
+      setError("Failed to refresh data");
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <ToastProvider>
@@ -87,8 +96,8 @@ export default function Home() {
                 </h1>
               </div>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Transform your Figma designs into production-ready code with advanced analysis, quality metrics, and
-                accessibility insights.
+                Transform your Figma designs into production-ready code with
+                advanced analysis, quality metrics, and accessibility insights.
               </p>
               <div className="flex items-center justify-center gap-2">
                 <Badge variant="secondary" className="flex items-center gap-1">
@@ -126,11 +135,17 @@ export default function Home() {
             {/* Main Content */}
             <Tabs defaultValue="generator" className="space-y-6">
               <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="generator" className="flex items-center gap-2">
+                <TabsTrigger
+                  value="generator"
+                  className="flex items-center gap-2"
+                >
                   <Figma className="h-4 w-4" />
                   Figma Import
                 </TabsTrigger>
-                <TabsTrigger value="analysis" className="flex items-center gap-2">
+                <TabsTrigger
+                  value="analysis"
+                  className="flex items-center gap-2"
+                >
                   <BarChart3 className="h-4 w-4" />
                   Analysis & Insights
                 </TabsTrigger>
@@ -152,10 +167,13 @@ export default function Home() {
                     onError={handleError}
                     onLoadingChange={handleLoadingChange}
                     onFileProcessed={(data) => {
-                      console.log("File processed:", data?.name || "Unknown file")
+                      console.log(
+                        "File processed:",
+                        data?.name || "Unknown file",
+                      );
                     }}
                     onExportCompleted={(format, data) => {
-                      console.log("Export completed:", format)
+                      console.log("Export completed:", format);
                     }}
                   />
                 </FigmaErrorBoundary>
@@ -191,14 +209,17 @@ export default function Home() {
                           Generated Code
                         </CardTitle>
                         <CardDescription>
-                          Your generated code will appear here after processing a Figma file
+                          Your generated code will appear here after processing
+                          a Figma file
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="flex items-center justify-center py-12">
                         <div className="text-center space-y-4">
                           <Code className="h-12 w-12 mx-auto text-muted-foreground" />
                           <div className="space-y-2">
-                            <p className="text-sm font-medium">No code generated yet</p>
+                            <p className="text-sm font-medium">
+                              No code generated yet
+                            </p>
                             <p className="text-xs text-muted-foreground">
                               Import a Figma file to start generating code
                             </p>
@@ -222,7 +243,8 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-blue-600">
-                    Advanced Figma API integration with intelligent component detection and design system analysis.
+                    Advanced Figma API integration with intelligent component
+                    detection and design system analysis.
                   </p>
                 </CardContent>
               </Card>
@@ -236,8 +258,8 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-purple-600">
-                    Comprehensive quality analysis including accessibility audits, performance metrics, and best
-                    practices.
+                    Comprehensive quality analysis including accessibility
+                    audits, performance metrics, and best practices.
                   </p>
                 </CardContent>
               </Card>
@@ -251,7 +273,8 @@ export default function Home() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-green-600">
-                    Generate clean, maintainable code for React, Vue, Angular, and more with TypeScript support.
+                    Generate clean, maintainable code for React, Vue, Angular,
+                    and more with TypeScript support.
                   </p>
                 </CardContent>
               </Card>
@@ -260,5 +283,5 @@ export default function Home() {
         </div>
       </FigmaErrorBoundary>
     </ToastProvider>
-  )
+  );
 }

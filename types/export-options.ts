@@ -4,15 +4,15 @@
 
 export interface ExportConfiguration {
   /** Export format */
-  format: ExportFormat
+  format: ExportFormat;
   /** Output options */
-  output: OutputOptions
+  output: OutputOptions;
   /** Token filtering */
-  tokenFilter: TokenFilter
+  tokenFilter: TokenFilter;
   /** Format-specific options */
-  formatOptions: FormatOptions
+  formatOptions: FormatOptions;
   /** Export metadata */
-  metadata: ExportMetadata
+  metadata: ExportMetadata;
 }
 
 export type ExportFormat =
@@ -28,36 +28,36 @@ export type ExportFormat =
   | "figma-tokens"
   | "style-dictionary"
   | "android-xml"
-  | "ios-swift"
+  | "ios-swift";
 
 export interface OutputOptions {
   /** Output filename */
-  filename: string
+  filename: string;
   /** Whether to minify output */
-  minify: boolean
+  minify: boolean;
   /** Whether to include comments */
-  includeComments: boolean
+  includeComments: boolean;
   /** Indentation style */
-  indentation: "tabs" | "spaces"
+  indentation: "tabs" | "spaces";
   /** Indentation size */
-  indentationSize: number
+  indentationSize: number;
   /** Line ending style */
-  lineEndings: "lf" | "crlf"
+  lineEndings: "lf" | "crlf";
 }
 
 export interface TokenFilter {
   /** Include specific categories */
-  includeCategories?: string[]
+  includeCategories?: string[];
   /** Exclude specific categories */
-  excludeCategories?: string[]
+  excludeCategories?: string[];
   /** Include specific tokens by ID */
-  includeTokens?: string[]
+  includeTokens?: string[];
   /** Exclude specific tokens by ID */
-  excludeTokens?: string[]
+  excludeTokens?: string[];
   /** Filter by tags */
-  tags?: string[]
+  tags?: string[];
   /** Only include valid tokens */
-  validOnly?: boolean
+  validOnly?: boolean;
 }
 
 export type FormatOptions =
@@ -67,178 +67,178 @@ export type FormatOptions =
   | TypeScriptFormatOptions
   | JSONFormatOptions
   | TailwindFormatOptions
-  | FigmaTokensFormatOptions
+  | FigmaTokensFormatOptions;
 
 export interface CSSFormatOptions {
   /** CSS variable prefix */
-  prefix: string
+  prefix: string;
   /** Whether to use CSS custom properties */
-  useCustomProperties: boolean
+  useCustomProperties: boolean;
   /** Selector for CSS variables */
-  selector: string
+  selector: string;
   /** Whether to include fallbacks */
-  includeFallbacks: boolean
+  includeFallbacks: boolean;
 }
 
 export interface SCSSFormatOptions {
   /** SCSS variable prefix */
-  prefix: string
+  prefix: string;
   /** Whether to use !default flag */
-  useDefault: boolean
+  useDefault: boolean;
   /** Whether to create mixins */
-  createMixins: boolean
+  createMixins: boolean;
   /** Map name for token maps */
-  mapName: string
+  mapName: string;
 }
 
 export interface JavaScriptFormatOptions {
   /** Export style */
-  exportStyle: "commonjs" | "esm" | "umd"
+  exportStyle: "commonjs" | "esm" | "umd";
   /** Whether to use const assertions */
-  useConstAssertions: boolean
+  useConstAssertions: boolean;
   /** Object structure */
-  objectStructure: "flat" | "nested"
+  objectStructure: "flat" | "nested";
 }
 
 export interface TypeScriptFormatOptions extends JavaScriptFormatOptions {
   /** Whether to generate type definitions */
-  generateTypes: boolean
+  generateTypes: boolean;
   /** Type definition style */
-  typeStyle: "interface" | "type"
+  typeStyle: "interface" | "type";
 }
 
 export interface JSONFormatOptions {
   /** JSON structure */
-  structure: "flat" | "nested" | "grouped"
+  structure: "flat" | "nested" | "grouped";
   /** Whether to include metadata */
-  includeMetadata: boolean
+  includeMetadata: boolean;
   /** Pretty print with indentation */
-  prettyPrint: boolean
+  prettyPrint: boolean;
 }
 
 export interface TailwindFormatOptions {
   /** Tailwind config section */
-  configSection: "theme" | "extend"
+  configSection: "theme" | "extend";
   /** Whether to include utilities */
-  includeUtilities: boolean
+  includeUtilities: boolean;
   /** Custom utility prefix */
-  utilityPrefix?: string
+  utilityPrefix?: string;
 }
 
 export interface FigmaTokensFormatOptions {
   /** Figma Tokens format version */
-  version: "1.0" | "2.0"
+  version: "1.0" | "2.0";
   /** Whether to include sets */
-  includeSets: boolean
+  includeSets: boolean;
   /** Set organization */
-  setOrganization: "category" | "theme" | "component"
+  setOrganization: "category" | "theme" | "component";
 }
 
 export interface ExportMetadata {
   /** Export timestamp */
-  exportedAt: Date
+  exportedAt: Date;
   /** Export version */
-  version: string
+  version: string;
   /** Source information */
-  source: SourceInfo
+  source: SourceInfo;
   /** Export statistics */
-  statistics: ExportStatistics
+  statistics: ExportStatistics;
 }
 
 export interface SourceInfo {
   /** Figma file information */
-  figmaFile?: FigmaFileInfo
+  figmaFile?: FigmaFileInfo;
   /** Design system name */
-  designSystemName: string
+  designSystemName: string;
   /** Design system version */
-  designSystemVersion: string
+  designSystemVersion: string;
 }
 
 export interface FigmaFileInfo {
   /** File key */
-  key: string
+  key: string;
   /** File name */
-  name: string
+  name: string;
   /** Last modified date */
-  lastModified: Date
+  lastModified: Date;
   /** File URL */
-  url: string
+  url: string;
 }
 
 export interface ExportStatistics {
   /** Total tokens exported */
-  totalTokens: number
+  totalTokens: number;
   /** Tokens by category */
-  tokensByCategory: Record<string, number>
+  tokensByCategory: Record<string, number>;
   /** Export file size */
-  fileSize: number
+  fileSize: number;
   /** Export duration */
-  duration: number
+  duration: number;
 }
 
 export interface ExportResult {
   /** Export success status */
-  success: boolean
+  success: boolean;
   /** Generated content */
-  content?: string
+  content?: string;
   /** Export metadata */
-  metadata: ExportMetadata
+  metadata: ExportMetadata;
   /** Export errors */
-  errors: ExportError[]
+  errors: ExportError[];
   /** Export warnings */
-  warnings: ExportWarning[]
+  warnings: ExportWarning[];
 }
 
 export interface ExportError {
-  code: string
-  message: string
-  tokenId?: string
-  severity: "error" | "warning"
+  code: string;
+  message: string;
+  tokenId?: string;
+  severity: "error" | "warning";
 }
 
 export interface ExportWarning {
-  code: string
-  message: string
-  tokenId?: string
-  suggestion?: string
+  code: string;
+  message: string;
+  tokenId?: string;
+  suggestion?: string;
 }
 
 export interface BatchExportConfiguration {
   /** Multiple export configurations */
-  exports: ExportConfiguration[]
+  exports: ExportConfiguration[];
   /** Batch options */
-  options: BatchExportOptions
+  options: BatchExportOptions;
 }
 
 export interface BatchExportOptions {
   /** Whether to create a zip file */
-  createZip: boolean
+  createZip: boolean;
   /** Zip filename */
-  zipFilename?: string
+  zipFilename?: string;
   /** Whether to continue on errors */
-  continueOnError: boolean
+  continueOnError: boolean;
   /** Parallel export limit */
-  parallelLimit: number
+  parallelLimit: number;
 }
 
 export interface BatchExportResult {
   /** Individual export results */
-  results: ExportResult[]
+  results: ExportResult[];
   /** Batch statistics */
-  statistics: BatchExportStatistics
+  statistics: BatchExportStatistics;
   /** Overall success status */
-  success: boolean
+  success: boolean;
 }
 
 export interface BatchExportStatistics {
   /** Total exports attempted */
-  totalExports: number
+  totalExports: number;
   /** Successful exports */
-  successfulExports: number
+  successfulExports: number;
   /** Failed exports */
-  failedExports: number
+  failedExports: number;
   /** Total duration */
-  totalDuration: number
+  totalDuration: number;
   /** Total file size */
-  totalFileSize: number
+  totalFileSize: number;
 }

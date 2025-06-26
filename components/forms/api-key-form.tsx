@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, Key, Loader2, AlertTriangle } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Eye, EyeOff, Key, Loader2, AlertTriangle } from "lucide-react";
 
 interface ApiKeyFormProps {
-  initialApiKey?: string
-  onSubmit: (apiKey: string, keyName: string) => Promise<void>
-  isConnecting: boolean
-  isConnected: boolean
-  connectionError?: string
+  initialApiKey?: string;
+  onSubmit: (apiKey: string, keyName: string) => Promise<void>;
+  isConnecting: boolean;
+  isConnected: boolean;
+  connectionError?: string;
 }
 
 export function ApiKeyForm({
@@ -24,39 +24,39 @@ export function ApiKeyForm({
   isConnected,
   connectionError,
 }: ApiKeyFormProps) {
-  const [apiKey, setApiKey] = useState(initialApiKey)
-  const [keyName, setKeyName] = useState("")
-  const [showApiKey, setShowApiKey] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [apiKey, setApiKey] = useState(initialApiKey);
+  const [keyName, setKeyName] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {}
+    const newErrors: Record<string, string> = {};
 
     if (!apiKey.trim()) {
-      newErrors.apiKey = "API key is required"
+      newErrors.apiKey = "API key is required";
     } else if (!apiKey.startsWith("figd_")) {
-      newErrors.apiKey = "Invalid Figma API key format"
+      newErrors.apiKey = "Invalid Figma API key format";
     }
 
     if (!keyName.trim()) {
-      newErrors.keyName = "Key name is required"
+      newErrors.keyName = "Key name is required";
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!validateForm()) return
+    if (!validateForm()) return;
 
     try {
-      await onSubmit(apiKey.trim(), keyName.trim())
+      await onSubmit(apiKey.trim(), keyName.trim());
     } catch (error) {
-      console.error("API key submission failed:", error)
+      console.error("API key submission failed:", error);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,7 +70,9 @@ export function ApiKeyForm({
           onChange={(e) => setKeyName(e.target.value)}
           disabled={isConnecting || isConnected}
         />
-        {errors.keyName && <p className="text-sm text-red-600">{errors.keyName}</p>}
+        {errors.keyName && (
+          <p className="text-sm text-red-600">{errors.keyName}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -93,10 +95,16 @@ export function ApiKeyForm({
             onClick={() => setShowApiKey(!showApiKey)}
             disabled={isConnecting || isConnected}
           >
-            {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showApiKey ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
           </Button>
         </div>
-        {errors.apiKey && <p className="text-sm text-red-600">{errors.apiKey}</p>}
+        {errors.apiKey && (
+          <p className="text-sm text-red-600">{errors.apiKey}</p>
+        )}
       </div>
 
       {connectionError && (
@@ -106,7 +114,11 @@ export function ApiKeyForm({
         </Alert>
       )}
 
-      <Button type="submit" disabled={isConnecting || isConnected} className="w-full">
+      <Button
+        type="submit"
+        disabled={isConnecting || isConnected}
+        className="w-full"
+      >
         {isConnecting ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -131,5 +143,5 @@ export function ApiKeyForm({
         <p>• You can revoke access anytime from your Figma account</p>
       </div>
     </form>
-  )
+  );
 }

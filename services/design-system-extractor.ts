@@ -15,57 +15,57 @@ import type {
   ShadowValue,
   ValidationStatus,
   TokenCategory,
-} from "@/types/design-tokens"
-import type { FigmaApiResponse, FigmaNode, FigmaStyle } from "@/types/figma"
+} from "@/types/design-tokens";
+import type { FigmaApiResponse, FigmaNode, FigmaStyle } from "@/types/figma";
 
 export interface ExtractionOptions {
   /** Categories to extract */
-  categories: TokenCategory[]
+  categories: TokenCategory[];
   /** Whether to include usage statistics */
-  includeUsage: boolean
+  includeUsage: boolean;
   /** Whether to validate tokens */
-  validateTokens: boolean
+  validateTokens: boolean;
   /** Custom extraction rules */
-  customRules?: ExtractionRule[]
+  customRules?: ExtractionRule[];
   /** Naming convention */
-  namingConvention: NamingConvention
+  namingConvention: NamingConvention;
 }
 
 export interface ExtractionRule {
   /** Rule name */
-  name: string
+  name: string;
   /** Node selector */
-  selector: (node: FigmaNode) => boolean
+  selector: (node: FigmaNode) => boolean;
   /** Token extractor */
-  extractor: (node: FigmaNode) => DesignToken | null
+  extractor: (node: FigmaNode) => DesignToken | null;
   /** Priority (higher = processed first) */
-  priority: number
+  priority: number;
 }
 
 export interface NamingConvention {
   /** Naming style */
-  style: "camelCase" | "kebab-case" | "snake_case" | "PascalCase"
+  style: "camelCase" | "kebab-case" | "snake_case" | "PascalCase";
   /** Prefix for all tokens */
-  prefix?: string
+  prefix?: string;
   /** Suffix for all tokens */
-  suffix?: string
+  suffix?: string;
   /** Category prefixes */
-  categoryPrefixes?: Record<TokenCategory, string>
+  categoryPrefixes?: Record<TokenCategory, string>;
 }
 
 export interface ExtractionProgress {
   /** Current phase */
-  phase: ExtractionPhase
+  phase: ExtractionPhase;
   /** Progress percentage (0-100) */
-  progress: number
+  progress: number;
   /** Current item being processed */
-  currentItem?: string
+  currentItem?: string;
   /** Total items to process */
-  totalItems: number
+  totalItems: number;
   /** Processed items */
-  processedItems: number
+  processedItems: number;
   /** Estimated time remaining (ms) */
-  estimatedTimeRemaining?: number
+  estimatedTimeRemaining?: number;
 }
 
 export type ExtractionPhase =
@@ -78,29 +78,29 @@ export type ExtractionPhase =
   | "extracting-borders"
   | "validating-tokens"
   | "generating-metadata"
-  | "finalizing"
+  | "finalizing";
 
 export class DesignSystemExtractor {
-  private figmaData: FigmaApiResponse
-  private options: ExtractionOptions
-  private progressCallback?: (progress: ExtractionProgress) => void
-  private abortController?: AbortController
+  private figmaData: FigmaApiResponse;
+  private options: ExtractionOptions;
+  private progressCallback?: (progress: ExtractionProgress) => void;
+  private abortController?: AbortController;
 
   constructor(
     figmaData: FigmaApiResponse,
     options: ExtractionOptions,
     progressCallback?: (progress: ExtractionProgress) => void,
   ) {
-    this.figmaData = figmaData
-    this.options = options
-    this.progressCallback = progressCallback
+    this.figmaData = figmaData;
+    this.options = options;
+    this.progressCallback = progressCallback;
   }
 
   async extractTokens(): Promise<TokenCollection> {
-    this.abortController = new AbortController()
+    this.abortController = new AbortController();
 
     try {
-      this.updateProgress("initializing", 0)
+      this.updateProgress("initializing", 0);
 
       const collection: TokenCollection = {
         id: `collection-${Date.now()}`,
@@ -114,54 +114,77 @@ export class DesignSystemExtractor {
           version: this.figmaData.version || "1.0.0",
           tags: [],
         },
-      }
+      };
 
       // Analyze document structure
-      this.updateProgress("analyzing-structure", 10)
-      const nodes = this.analyzeDocumentStructure()
+      this.updateProgress("analyzing-structure", 10);
+      const nodes = this.analyzeDocumentStructure();
 
       // Extract tokens by category
       const extractionTasks = [
-        { category: "color", extractor: this.extractColorTokens.bind(this), weight: 25 },
-        { category: "typography", extractor: this.extractTypographyTokens.bind(this), weight: 20 },
-        { category: "spacing", extractor: this.extractSpacingTokens.bind(this), weight: 15 },
-        { category: "shadow", extractor: this.extractShadowTokens.bind(this), weight: 15 },
-        { category: "border-radius", extractor: this.extractBorderRadiusTokens.bind(this), weight: 10 },
-      ]
+        {
+          category: "color",
+          extractor: this.extractColorTokens.bind(this),
+          weight: 25,
+        },
+        {
+          category: "typography",
+          extractor: this.extractTypographyTokens.bind(this),
+          weight: 20,
+        },
+        {
+          category: "spacing",
+          extractor: this.extractSpacingTokens.bind(this),
+          weight: 15,
+        },
+        {
+          category: "shadow",
+          extractor: this.extractShadowTokens.bind(this),
+          weight: 15,
+        },
+        {
+          category: "border-radius",
+          extractor: this.extractBorderRadiusTokens.bind(this),
+          weight: 10,
+        },
+      ];
 
-      let currentProgress = 10
+      let currentProgress = 10;
       for (const task of extractionTasks) {
         if (this.options.categories.includes(task.category as TokenCategory)) {
-          this.updateProgress(`extracting-${task.category}` as ExtractionPhase, currentProgress)
-          const tokens = await task.extractor(nodes)
-          collection.tokens.push(...tokens)
+          this.updateProgress(
+            `extracting-${task.category}` as ExtractionPhase,
+            currentProgress,
+          );
+          const tokens = await task.extractor(nodes);
+          collection.tokens.push(...tokens);
         }
-        currentProgress += task.weight
+        currentProgress += task.weight;
       }
 
       // Validate tokens if requested
       if (this.options.validateTokens) {
-        this.updateProgress("validating-tokens", 85)
-        await this.validateTokens(collection.tokens)
+        this.updateProgress("validating-tokens", 85);
+        await this.validateTokens(collection.tokens);
       }
 
       // Generate metadata
-      this.updateProgress("generating-metadata", 95)
-      await this.generateMetadata(collection)
+      this.updateProgress("generating-metadata", 95);
+      await this.generateMetadata(collection);
 
-      this.updateProgress("finalizing", 100)
+      this.updateProgress("finalizing", 100);
 
-      return collection
+      return collection;
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        throw new Error("Token extraction was cancelled")
+        throw new Error("Token extraction was cancelled");
       }
-      throw error
+      throw error;
     }
   }
 
   abort(): void {
-    this.abortController?.abort()
+    this.abortController?.abort();
   }
 
   private updateProgress(phase: ExtractionPhase, progress: number): void {
@@ -171,7 +194,7 @@ export class DesignSystemExtractor {
       totalItems: 100,
       processedItems: progress,
       currentItem: this.getPhaseDescription(phase),
-    })
+    });
   }
 
   private getPhaseDescription(phase: ExtractionPhase): string {
@@ -186,43 +209,46 @@ export class DesignSystemExtractor {
       "validating-tokens": "Validating extracted tokens...",
       "generating-metadata": "Generating metadata...",
       finalizing: "Finalizing token collection...",
-    }
-    return descriptions[phase]
+    };
+    return descriptions[phase];
   }
 
   private analyzeDocumentStructure(): FigmaNode[] {
-    const nodes: FigmaNode[] = []
+    const nodes: FigmaNode[] = [];
 
     const traverse = (node: FigmaNode) => {
-      nodes.push(node)
+      nodes.push(node);
       if (node.children) {
-        node.children.forEach(traverse)
+        node.children.forEach(traverse);
       }
-    }
+    };
 
     if (this.figmaData.document?.children) {
-      this.figmaData.document.children.forEach(traverse)
+      this.figmaData.document.children.forEach(traverse);
     }
 
-    return nodes
+    return nodes;
   }
 
   private async extractColorTokens(nodes: FigmaNode[]): Promise<ColorToken[]> {
-    const colorTokens: ColorToken[] = []
-    const processedColors = new Set<string>()
+    const colorTokens: ColorToken[] = [];
+    const processedColors = new Set<string>();
 
     // Extract from fills
     for (const node of nodes) {
       if (node.fills) {
         for (const fill of node.fills) {
           if (fill.type === "SOLID" && fill.color) {
-            const colorKey = this.getColorKey(fill.color)
+            const colorKey = this.getColorKey(fill.color);
             if (!processedColors.has(colorKey)) {
-              processedColors.add(colorKey)
+              processedColors.add(colorKey);
 
-              const colorValue = this.convertFigmaColorToColorValue(fill.color, fill.opacity)
-              const token = this.createColorToken(node, colorValue)
-              colorTokens.push(token)
+              const colorValue = this.convertFigmaColorToColorValue(
+                fill.color,
+                fill.opacity,
+              );
+              const token = this.createColorToken(node, colorValue);
+              colorTokens.push(token);
             }
           }
         }
@@ -234,112 +260,130 @@ export class DesignSystemExtractor {
       for (const [styleId, style] of Object.entries(this.figmaData.styles)) {
         if (style.styleType === "FILL") {
           // Create token from style
-          const token = this.createColorTokenFromStyle(styleId, style)
+          const token = this.createColorTokenFromStyle(styleId, style);
           if (token) {
-            colorTokens.push(token)
+            colorTokens.push(token);
           }
         }
       }
     }
 
-    return colorTokens
+    return colorTokens;
   }
 
-  private async extractTypographyTokens(nodes: FigmaNode[]): Promise<TypographyToken[]> {
-    const typographyTokens: TypographyToken[] = []
-    const processedStyles = new Set<string>()
+  private async extractTypographyTokens(
+    nodes: FigmaNode[],
+  ): Promise<TypographyToken[]> {
+    const typographyTokens: TypographyToken[] = [];
+    const processedStyles = new Set<string>();
 
     for (const node of nodes) {
       if (node.type === "TEXT" && node.style) {
-        const styleKey = this.getTypographyStyleKey(node.style)
+        const styleKey = this.getTypographyStyleKey(node.style);
         if (!processedStyles.has(styleKey)) {
-          processedStyles.add(styleKey)
+          processedStyles.add(styleKey);
 
-          const typographyValue = this.convertFigmaStyleToTypographyValue(node.style)
-          const token = this.createTypographyToken(node, typographyValue)
-          typographyTokens.push(token)
+          const typographyValue = this.convertFigmaStyleToTypographyValue(
+            node.style,
+          );
+          const token = this.createTypographyToken(node, typographyValue);
+          typographyTokens.push(token);
         }
       }
     }
 
-    return typographyTokens
+    return typographyTokens;
   }
 
-  private async extractSpacingTokens(nodes: FigmaNode[]): Promise<SpacingToken[]> {
-    const spacingTokens: SpacingToken[] = []
-    const spacingValues = new Set<number>()
+  private async extractSpacingTokens(
+    nodes: FigmaNode[],
+  ): Promise<SpacingToken[]> {
+    const spacingTokens: SpacingToken[] = [];
+    const spacingValues = new Set<number>();
 
     for (const node of nodes) {
       // Extract padding/margin values
-      if (node.paddingLeft !== undefined) spacingValues.add(node.paddingLeft)
-      if (node.paddingRight !== undefined) spacingValues.add(node.paddingRight)
-      if (node.paddingTop !== undefined) spacingValues.add(node.paddingTop)
-      if (node.paddingBottom !== undefined) spacingValues.add(node.paddingBottom)
+      if (node.paddingLeft !== undefined) spacingValues.add(node.paddingLeft);
+      if (node.paddingRight !== undefined) spacingValues.add(node.paddingRight);
+      if (node.paddingTop !== undefined) spacingValues.add(node.paddingTop);
+      if (node.paddingBottom !== undefined)
+        spacingValues.add(node.paddingBottom);
 
       // Extract spacing from layout
-      if (node.itemSpacing !== undefined) spacingValues.add(node.itemSpacing)
-      if (node.counterAxisSpacing !== undefined) spacingValues.add(node.counterAxisSpacing)
+      if (node.itemSpacing !== undefined) spacingValues.add(node.itemSpacing);
+      if (node.counterAxisSpacing !== undefined)
+        spacingValues.add(node.counterAxisSpacing);
     }
 
     // Convert unique spacing values to tokens
     Array.from(spacingValues).forEach((value, index) => {
-      const spacingValue: SpacingValue = { value, unit: "px" }
-      const token = this.createSpacingToken(`spacing-${index}`, spacingValue)
-      spacingTokens.push(token)
-    })
+      const spacingValue: SpacingValue = { value, unit: "px" };
+      const token = this.createSpacingToken(`spacing-${index}`, spacingValue);
+      spacingTokens.push(token);
+    });
 
-    return spacingTokens
+    return spacingTokens;
   }
 
-  private async extractShadowTokens(nodes: FigmaNode[]): Promise<ShadowToken[]> {
-    const shadowTokens: ShadowToken[] = []
-    const processedShadows = new Set<string>()
+  private async extractShadowTokens(
+    nodes: FigmaNode[],
+  ): Promise<ShadowToken[]> {
+    const shadowTokens: ShadowToken[] = [];
+    const processedShadows = new Set<string>();
 
     for (const node of nodes) {
       if (node.effects) {
         for (const effect of node.effects) {
           if (effect.type === "DROP_SHADOW" && effect.visible) {
-            const shadowKey = this.getShadowKey(effect)
+            const shadowKey = this.getShadowKey(effect);
             if (!processedShadows.has(shadowKey)) {
-              processedShadows.add(shadowKey)
+              processedShadows.add(shadowKey);
 
-              const shadowValue = this.convertFigmaEffectToShadowValue(effect)
-              const token = this.createShadowToken(node, shadowValue)
-              shadowTokens.push(token)
+              const shadowValue = this.convertFigmaEffectToShadowValue(effect);
+              const token = this.createShadowToken(node, shadowValue);
+              shadowTokens.push(token);
             }
           }
         }
       }
     }
 
-    return shadowTokens
+    return shadowTokens;
   }
 
-  private async extractBorderRadiusTokens(nodes: FigmaNode[]): Promise<DesignToken[]> {
-    const borderRadiusTokens: DesignToken[] = []
-    const radiusValues = new Set<number>()
+  private async extractBorderRadiusTokens(
+    nodes: FigmaNode[],
+  ): Promise<DesignToken[]> {
+    const borderRadiusTokens: DesignToken[] = [];
+    const radiusValues = new Set<number>();
 
     for (const node of nodes) {
       if (node.cornerRadius !== undefined) {
-        radiusValues.add(node.cornerRadius)
+        radiusValues.add(node.cornerRadius);
       }
 
       // Individual corner radii
       if (node.rectangleCornerRadii) {
-        node.rectangleCornerRadii.forEach((radius) => radiusValues.add(radius))
+        node.rectangleCornerRadii.forEach((radius) => radiusValues.add(radius));
       }
     }
 
     Array.from(radiusValues).forEach((value, index) => {
-      const token = this.createBorderRadiusToken(`border-radius-${index}`, value)
-      borderRadiusTokens.push(token)
-    })
+      const token = this.createBorderRadiusToken(
+        `border-radius-${index}`,
+        value,
+      );
+      borderRadiusTokens.push(token);
+    });
 
-    return borderRadiusTokens
+    return borderRadiusTokens;
   }
 
-  private createColorToken(node: FigmaNode, colorValue: ColorValue): ColorToken {
-    const name = this.generateTokenName("color", node.name || "color")
+  private createColorToken(
+    node: FigmaNode,
+    colorValue: ColorValue,
+  ): ColorToken {
+    const name = this.generateTokenName("color", node.name || "color");
 
     return {
       id: `color-${node.id}`,
@@ -357,17 +401,23 @@ export class DesignSystemExtractor {
       },
       validation: this.createValidationStatus(),
       accessibility: this.calculateColorAccessibility(colorValue),
-    }
+    };
   }
 
-  private createColorTokenFromStyle(styleId: string, style: FigmaStyle): ColorToken | null {
+  private createColorTokenFromStyle(
+    styleId: string,
+    style: FigmaStyle,
+  ): ColorToken | null {
     // Implementation would depend on style data structure
     // This is a simplified version
-    return null
+    return null;
   }
 
-  private createTypographyToken(node: FigmaNode, typographyValue: TypographyValue): TypographyToken {
-    const name = this.generateTokenName("typography", node.name || "text")
+  private createTypographyToken(
+    node: FigmaNode,
+    typographyValue: TypographyValue,
+  ): TypographyToken {
+    const name = this.generateTokenName("typography", node.name || "text");
 
     return {
       id: `typography-${node.id}`,
@@ -385,10 +435,13 @@ export class DesignSystemExtractor {
       },
       validation: this.createValidationStatus(),
       webFont: this.detectWebFont(typographyValue.fontFamily),
-    }
+    };
   }
 
-  private createSpacingToken(name: string, spacingValue: SpacingValue): SpacingToken {
+  private createSpacingToken(
+    name: string,
+    spacingValue: SpacingValue,
+  ): SpacingToken {
     return {
       id: `spacing-${name}`,
       name: this.generateTokenName("spacing", name),
@@ -403,11 +456,14 @@ export class DesignSystemExtractor {
         custom: {},
       },
       validation: this.createValidationStatus(),
-    }
+    };
   }
 
-  private createShadowToken(node: FigmaNode, shadowValue: ShadowValue): ShadowToken {
-    const name = this.generateTokenName("shadow", node.name || "shadow")
+  private createShadowToken(
+    node: FigmaNode,
+    shadowValue: ShadowValue,
+  ): ShadowToken {
+    const name = this.generateTokenName("shadow", node.name || "shadow");
 
     return {
       id: `shadow-${node.id}`,
@@ -424,7 +480,7 @@ export class DesignSystemExtractor {
         custom: {},
       },
       validation: this.createValidationStatus(),
-    }
+    };
   }
 
   private createBorderRadiusToken(name: string, value: number): DesignToken {
@@ -442,29 +498,33 @@ export class DesignSystemExtractor {
         custom: {},
       },
       validation: this.createValidationStatus(),
-    }
+    };
   }
 
   private generateTokenName(category: string, baseName: string): string {
-    const { style, prefix, suffix, categoryPrefixes } = this.options.namingConvention
+    const { style, prefix, suffix, categoryPrefixes } =
+      this.options.namingConvention;
 
-    let name = baseName
+    let name = baseName;
 
     // Apply category prefix
     if (categoryPrefixes?.[category as TokenCategory]) {
-      name = `${categoryPrefixes[category as TokenCategory]}-${name}`
+      name = `${categoryPrefixes[category as TokenCategory]}-${name}`;
     }
 
     // Apply global prefix/suffix
-    if (prefix) name = `${prefix}-${name}`
-    if (suffix) name = `${name}-${suffix}`
+    if (prefix) name = `${prefix}-${name}`;
+    if (suffix) name = `${name}-${suffix}`;
 
     // Apply naming style
-    return this.applyNamingStyle(name, style)
+    return this.applyNamingStyle(name, style);
   }
 
-  private applyNamingStyle(name: string, style: NamingConvention["style"]): string {
-    const words = name.split(/[-_\s]+/).filter(Boolean)
+  private applyNamingStyle(
+    name: string,
+    style: NamingConvention["style"],
+  ): string {
+    const words = name.split(/[-_\s]+/).filter(Boolean);
 
     switch (style) {
       case "camelCase":
@@ -474,38 +534,43 @@ export class DesignSystemExtractor {
             .slice(1)
             .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
             .join("")
-        )
+        );
 
       case "PascalCase":
-        return words.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join("")
+        return words
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+          .join("");
 
       case "kebab-case":
-        return words.map((w) => w.toLowerCase()).join("-")
+        return words.map((w) => w.toLowerCase()).join("-");
 
       case "snake_case":
-        return words.map((w) => w.toLowerCase()).join("_")
+        return words.map((w) => w.toLowerCase()).join("_");
 
       default:
-        return name
+        return name;
     }
   }
 
-  private convertFigmaColorToColorValue(figmaColor: any, opacity = 1): ColorValue {
-    const r = Math.round(figmaColor.r * 255)
-    const g = Math.round(figmaColor.g * 255)
-    const b = Math.round(figmaColor.b * 255)
+  private convertFigmaColorToColorValue(
+    figmaColor: any,
+    opacity = 1,
+  ): ColorValue {
+    const r = Math.round(figmaColor.r * 255);
+    const g = Math.round(figmaColor.g * 255);
+    const b = Math.round(figmaColor.b * 255);
 
-    const hex = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`
+    const hex = `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 
     // Convert RGB to HSL
-    const hsl = this.rgbToHsl(r, g, b)
+    const hsl = this.rgbToHsl(r, g, b);
 
     return {
       hex,
       rgb: { r, g, b },
       hsl,
       alpha: opacity < 1 ? opacity : undefined,
-    }
+    };
   }
 
   private convertFigmaStyleToTypographyValue(style: any): TypographyValue {
@@ -516,7 +581,7 @@ export class DesignSystemExtractor {
       lineHeight: style.lineHeight || "normal",
       letterSpacing: style.letterSpacing,
       textTransform: style.textCase,
-    }
+    };
   }
 
   private convertFigmaEffectToShadowValue(effect: any): ShadowValue {
@@ -525,45 +590,51 @@ export class DesignSystemExtractor {
       offsetY: effect.offset?.y || 0,
       blurRadius: effect.radius || 0,
       spreadRadius: effect.spread || 0,
-      color: this.convertFigmaColorToColorValue(effect.color || { r: 0, g: 0, b: 0 }),
+      color: this.convertFigmaColorToColorValue(
+        effect.color || { r: 0, g: 0, b: 0 },
+      ),
       inset: effect.type === "INNER_SHADOW",
-    }
+    };
   }
 
-  private rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
-    r /= 255
-    g /= 255
-    b /= 255
+  private rgbToHsl(
+    r: number,
+    g: number,
+    b: number,
+  ): { h: number; s: number; l: number } {
+    r /= 255;
+    g /= 255;
+    b /= 255;
 
-    const max = Math.max(r, g, b)
-    const min = Math.min(r, g, b)
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
     let h = 0,
       s = 0,
-      l = (max + min) / 2
+      l = (max + min) / 2;
 
     if (max !== min) {
-      const d = max - min
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 
       switch (max) {
         case r:
-          h = (g - b) / d + (g < b ? 6 : 0)
-          break
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
         case g:
-          h = (b - r) / d + 2
-          break
+          h = (b - r) / d + 2;
+          break;
         case b:
-          h = (r - g) / d + 4
-          break
+          h = (r - g) / d + 4;
+          break;
       }
-      h /= 6
+      h /= 6;
     }
 
     return {
       h: Math.round(h * 360),
       s: Math.round(s * 100),
       l: Math.round(l * 100),
-    }
+    };
   }
 
   private calculateColorAccessibility(color: ColorValue): any {
@@ -577,7 +648,7 @@ export class DesignSystemExtractor {
         tritanopia: color.hex,
         achromatopsia: color.hex,
       },
-    }
+    };
   }
 
   private detectWebFont(fontFamily: string): any {
@@ -588,7 +659,7 @@ export class DesignSystemExtractor {
       styles: ["normal"],
       loading: "swap",
       display: "swap",
-    }
+    };
   }
 
   private createValidationStatus(): ValidationStatus {
@@ -597,41 +668,41 @@ export class DesignSystemExtractor {
       errors: [],
       warnings: [],
       lastValidated: new Date(),
-    }
+    };
   }
 
   private async validateTokens(tokens: DesignToken[]): Promise<void> {
     // Token validation logic would go here
     for (const token of tokens) {
       // Validate token structure, values, etc.
-      token.validation = this.createValidationStatus()
+      token.validation = this.createValidationStatus();
     }
   }
 
   private async generateMetadata(collection: TokenCollection): Promise<void> {
     // Generate additional metadata
-    collection.metadata.tags = this.generateCollectionTags(collection.tokens)
+    collection.metadata.tags = this.generateCollectionTags(collection.tokens);
   }
 
   private generateCollectionTags(tokens: DesignToken[]): string[] {
-    const categories = [...new Set(tokens.map((t) => t.category))]
-    return ["design-system", "figma-extracted", ...categories]
+    const categories = [...new Set(tokens.map((t) => t.category))];
+    return ["design-system", "figma-extracted", ...categories];
   }
 
   private extractFileKey(): string {
     // Extract file key from Figma data or URL
-    return "demo-file-key"
+    return "demo-file-key";
   }
 
   private getColorKey(color: any): string {
-    return `${color.r}-${color.g}-${color.b}`
+    return `${color.r}-${color.g}-${color.b}`;
   }
 
   private getTypographyStyleKey(style: any): string {
-    return `${style.fontFamily}-${style.fontSize}-${style.fontWeight}`
+    return `${style.fontFamily}-${style.fontSize}-${style.fontWeight}`;
   }
 
   private getShadowKey(effect: any): string {
-    return `${effect.offset?.x || 0}-${effect.offset?.y || 0}-${effect.radius || 0}`
+    return `${effect.offset?.x || 0}-${effect.offset?.y || 0}-${effect.radius || 0}`;
   }
 }

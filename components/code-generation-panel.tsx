@@ -1,25 +1,37 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import type { FigmaApiResponse } from "@/types/figma"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Code2, Download, Settings, FileCode, Eye, Plus, X, AlertTriangle } from "lucide-react"
-import { ConfigurationPanel } from "./configuration-panel"
-import { CustomCodePanel } from "./custom-code-panel"
-import { ComponentList } from "./component-list"
-import { ComponentDetails } from "./component-details"
-import { ToastContainer } from "./toast-container"
-import { useCodeGeneration } from "@/hooks/use-code-generation"
+import { useState, useMemo } from "react";
+import type { FigmaApiResponse } from "@/types/figma";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Code2,
+  Download,
+  Settings,
+  FileCode,
+  Eye,
+  Plus,
+  X,
+  AlertTriangle,
+} from "lucide-react";
+import { ConfigurationPanel } from "./configuration-panel";
+import { CustomCodePanel } from "./custom-code-panel";
+import { ComponentList } from "./component-list";
+import { ComponentDetails } from "./component-details";
+import { ToastContainer } from "./toast-container";
+import { useCodeGeneration } from "@/hooks/use-code-generation";
 
 interface CodeGenerationPanelProps {
-  figmaData: FigmaApiResponse
-  fileKey: string
+  figmaData: FigmaApiResponse;
+  fileKey: string;
 }
 
-export function CodeGenerationPanel({ figmaData, fileKey }: CodeGenerationPanelProps) {
+export function CodeGenerationPanel({
+  figmaData,
+  fileKey,
+}: CodeGenerationPanelProps) {
   const {
     options,
     setOptions,
@@ -39,12 +51,15 @@ export function CodeGenerationPanel({ figmaData, fileKey }: CodeGenerationPanelP
     toasts,
     dismissError,
     removeToast,
-  } = useCodeGeneration(figmaData)
+  } = useCodeGeneration(figmaData);
 
-  const [showCustomInputs, setShowCustomInputs] = useState(false)
-  const [activeTab, setActiveTab] = useState("jsx")
+  const [showCustomInputs, setShowCustomInputs] = useState(false);
+  const [activeTab, setActiveTab] = useState("jsx");
 
-  const hasCustomCode = useMemo(() => !!(customCode.jsx || customCode.css || customCode.cssAdvanced), [customCode])
+  const hasCustomCode = useMemo(
+    () => !!(customCode.jsx || customCode.css || customCode.cssAdvanced),
+    [customCode],
+  );
 
   return (
     <div className="space-y-6">
@@ -54,11 +69,19 @@ export function CodeGenerationPanel({ figmaData, fileKey }: CodeGenerationPanelP
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <div>
-              <strong>{error.type.charAt(0).toUpperCase() + error.type.slice(1)} Error:</strong> {error.message}
+              <strong>
+                {error.type.charAt(0).toUpperCase() + error.type.slice(1)}{" "}
+                Error:
+              </strong>{" "}
+              {error.message}
               {error.details && (
                 <details className="mt-2">
-                  <summary className="cursor-pointer text-sm">Show details</summary>
-                  <pre className="mt-1 text-xs whitespace-pre-wrap">{error.details}</pre>
+                  <summary className="cursor-pointer text-sm">
+                    Show details
+                  </summary>
+                  <pre className="mt-1 text-xs whitespace-pre-wrap">
+                    {error.details}
+                  </pre>
                 </details>
               )}
             </div>
@@ -82,12 +105,23 @@ export function CodeGenerationPanel({ figmaData, fileKey }: CodeGenerationPanelP
 
           {/* Custom Code Section */}
           <div className="pt-4 border-t">
-            <Button variant="outline" onClick={() => setShowCustomInputs(!showCustomInputs)} className="mb-4 w-full">
+            <Button
+              variant="outline"
+              onClick={() => setShowCustomInputs(!showCustomInputs)}
+              className="mb-4 w-full"
+            >
               <Plus className="w-4 h-4 mr-2" />
-              {showCustomInputs ? "Egyéni Kód Elrejtése" : "Egyéni Kód Hozzáadása"}
+              {showCustomInputs
+                ? "Egyéni Kód Elrejtése"
+                : "Egyéni Kód Hozzáadása"}
             </Button>
 
-            {showCustomInputs && <CustomCodePanel customCode={customCode} onCustomCodeChange={setCustomCode} />}
+            {showCustomInputs && (
+              <CustomCodePanel
+                customCode={customCode}
+                onCustomCodeChange={setCustomCode}
+              />
+            )}
 
             <div className="flex gap-2 mt-4">
               <Button
@@ -127,10 +161,16 @@ export function CodeGenerationPanel({ figmaData, fileKey }: CodeGenerationPanelP
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center space-x-2">
                   <FileCode className="w-5 h-5" />
-                  <span>Generált Komponensek ({generatedComponents.length})</span>
+                  <span>
+                    Generált Komponensek ({generatedComponents.length})
+                  </span>
                 </CardTitle>
                 {selectedComponent && (
-                  <Button onClick={handleDownloadAll} variant="outline" size="sm">
+                  <Button
+                    onClick={handleDownloadAll}
+                    variant="outline"
+                    size="sm"
+                  >
                     <Download className="w-4 h-4 mr-2" />
                     Összes Letöltése
                   </Button>
@@ -157,8 +197,12 @@ export function CodeGenerationPanel({ figmaData, fileKey }: CodeGenerationPanelP
                     <span>{selectedComponent.name}</span>
                   </CardTitle>
                   <div className="flex items-center space-x-2">
-                    <Badge variant="secondary">{selectedComponent.metadata.complexity}</Badge>
-                    <Badge variant="outline">{selectedComponent.metadata.estimatedAccuracy}% pontosság</Badge>
+                    <Badge variant="secondary">
+                      {selectedComponent.metadata.complexity}
+                    </Badge>
+                    <Badge variant="outline">
+                      {selectedComponent.metadata.estimatedAccuracy}% pontosság
+                    </Badge>
                     {hasCustomCode && (
                       <Badge variant="default" className="bg-green-600">
                         <Plus className="w-3 h-3 mr-1" />
@@ -187,5 +231,5 @@ export function CodeGenerationPanel({ figmaData, fileKey }: CodeGenerationPanelP
       {/* Toast Container */}
       <ToastContainer toasts={toasts} onRemoveToast={removeToast} />
     </div>
-  )
+  );
 }

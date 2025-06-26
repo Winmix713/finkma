@@ -1,27 +1,38 @@
-"use client"
+"use client";
 
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { FileCode, Palette, Zap, FileText } from "lucide-react"
-import type { CustomCodeInputs } from "@/services/advanced-code-generator"
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { FileCode, Palette, Zap, FileText } from "lucide-react";
+import type { CustomCodeInputs } from "@/services/advanced-code-generator";
 
 interface CustomCodePanelProps {
-  customCode: CustomCodeInputs
-  onCustomCodeChange: (customCode: CustomCodeInputs) => void
+  customCode: CustomCodeInputs;
+  onCustomCodeChange: (customCode: CustomCodeInputs) => void;
 }
 
-export function CustomCodePanel({ customCode, onCustomCodeChange }: CustomCodePanelProps) {
-  const updateCustomCode = <K extends keyof CustomCodeInputs>(key: K, value: CustomCodeInputs[K]) => {
-    onCustomCodeChange({ ...customCode, [key]: value })
-  }
+export function CustomCodePanel({
+  customCode,
+  onCustomCodeChange,
+}: CustomCodePanelProps) {
+  const updateCustomCode = <K extends keyof CustomCodeInputs>(
+    key: K,
+    value: CustomCodeInputs[K],
+  ) => {
+    onCustomCodeChange({ ...customCode, [key]: value });
+  };
 
   return (
     <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-      <h4 className="font-semibold text-gray-900 mb-3">Egyéni Kód Hozzáadása</h4>
+      <h4 className="font-semibold text-gray-900 mb-3">
+        Egyéni Kód Hozzáadása
+      </h4>
 
       <div className="space-y-4">
         <div>
-          <Label htmlFor="custom-jsx" className="flex items-center space-x-2 mb-2">
+          <Label
+            htmlFor="custom-jsx"
+            className="flex items-center space-x-2 mb-2"
+          >
             <FileCode className="w-4 h-4" />
             <span>JSX Kód Hozzáadása</span>
           </Label>
@@ -40,7 +51,10 @@ const customElement = <div>Egyéni tartalom</div>;"
         </div>
 
         <div>
-          <Label htmlFor="custom-css" className="flex items-center space-x-2 mb-2">
+          <Label
+            htmlFor="custom-css"
+            className="flex items-center space-x-2 mb-2"
+          >
             <Palette className="w-4 h-4" />
             <span>CSS Kód Hozzáadása</span>
           </Label>
@@ -63,7 +77,10 @@ const customElement = <div>Egyéni tartalom</div>;"
         </div>
 
         <div>
-          <Label htmlFor="custom-css-advanced" className="flex items-center space-x-2 mb-2">
+          <Label
+            htmlFor="custom-css-advanced"
+            className="flex items-center space-x-2 mb-2"
+          >
             <Zap className="w-4 h-4" />
             <span>CSS++ Kód Hozzáadása (Fejlett)</span>
           </Label>
@@ -101,10 +118,12 @@ const customElement = <div>Egyéni tartalom</div>;"
                 • <strong>JSX Kód:</strong> Beépül a generált React komponensbe
               </li>
               <li>
-                • <strong>CSS Kód:</strong> Hozzáadódik a komponens stíluslapjához
+                • <strong>CSS Kód:</strong> Hozzáadódik a komponens
+                stíluslapjához
               </li>
               <li>
-                • <strong>CSS++:</strong> Fejlett CSS funkciók (animációk, custom properties)
+                • <strong>CSS++:</strong> Fejlett CSS funkciók (animációk,
+                custom properties)
               </li>
               <li>• A Figma adatok + egyéni kód = teljes React komponens</li>
             </ul>
@@ -112,5 +131,5 @@ const customElement = <div>Egyéni tartalom</div>;"
         </div>
       </div>
     </div>
-  )
+  );
 }

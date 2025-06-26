@@ -1,109 +1,128 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { validateFigmaUrl } from "@/utils/figma-url-validator"
-import { useToast } from "@/components/ui/toast-system"
-import { Upload, Loader2, CheckCircle, AlertCircle, X } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { validateFigmaUrl } from "@/utils/figma-url-validator";
+import { useToast } from "@/components/ui/toast-system";
+import { Upload, Loader2, CheckCircle, AlertCircle, X } from "lucide-react";
 
 interface BatchImportFormProps {
-  onSubmit: (urls: string[]) => Promise<void>
-  isProcessing?: boolean
-  disabled?: boolean
+  onSubmit: (urls: string[]) => Promise<void>;
+  isProcessing?: boolean;
+  disabled?: boolean;
 }
 
 interface UrlValidationResult {
-  url: string
-  isValid: boolean
-  error?: string
-  fileId?: string
+  url: string;
+  isValid: boolean;
+  error?: string;
+  fileId?: string;
 }
 
-export function BatchImportForm({ onSubmit, isProcessing = false, disabled = false }: BatchImportFormProps) {
-  const [urlsText, setUrlsText] = useState("")
-  const [validatedUrls, setValidatedUrls] = useState<UrlValidationResult[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { success, error, warning } = useToast()
+export function BatchImportForm({
+  onSubmit,
+  isProcessing = false,
+  disabled = false,
+}: BatchImportFormProps) {
+  const [urlsText, setUrlsText] = useState("");
+  const [validatedUrls, setValidatedUrls] = useState<UrlValidationResult[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { success, error, warning } = useToast();
 
   const parseAndValidateUrls = (text: string): UrlValidationResult[] => {
-    if (!text.trim()) return []
+    if (!text.trim()) return [];
 
     // Split by newlines and filter out empty lines
     const urls = text
       .split("\n")
       .map((url) => url.trim())
-      .filter((url) => url.length > 0)
+      .filter((url) => url.length > 0);
 
     // Remove duplicates
-    const uniqueUrls = [...new Set(urls)]
+    const uniqueUrls = [...new Set(urls)];
 
     // Validate each URL
     return uniqueUrls.map((url) => {
-      const validation = validateFigmaUrl(url)
+      const validation = validateFigmaUrl(url);
       return {
         url,
         isValid: validation.isValid,
         error: validation.error,
         fileId: validation.fileId,
-      }
-    })
-  }
+      };
+    });
+  };
 
   const handleUrlsChange = (value: string) => {
-    setUrlsText(value)
-    const validated = parseAndValidateUrls(value)
-    setValidatedUrls(validated)
-  }
+    setUrlsText(value);
+    const validated = parseAndValidateUrls(value);
+    setValidatedUrls(validated);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!urlsText.trim()) {
-      error("URLs Required", "Please enter at least one Figma URL")
-      return
+      error("URLs Required", "Please enter at least one Figma URL");
+      return;
     }
 
-    const validUrls = validatedUrls.filter((item) => item.isValid)
-    const invalidUrls = validatedUrls.filter((item) => !item.isValid)
+    const validUrls = validatedUrls.filter((item) => item.isValid);
+    const invalidUrls = validatedUrls.filter((item) => !item.isValid);
 
     if (validUrls.length === 0) {
-      error("No Valid URLs", "Please provide at least one valid Figma URL")
-      return
+      error("No Valid URLs", "Please provide at least one valid Figma URL");
+      return;
     }
 
     if (invalidUrls.length > 0) {
-      warning("Some URLs Invalid", `${invalidUrls.length} URL(s) will be skipped due to validation errors`)
+      warning(
+        "Some URLs Invalid",
+        `${invalidUrls.length} URL(s) will be skipped due to validation errors`,
+      );
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await onSubmit(validUrls.map((item) => item.url))
-      success("Batch Processing Started", `Processing ${validUrls.length} Figma file(s)`)
-      setUrlsText("")
-      setValidatedUrls([])
+      await onSubmit(validUrls.map((item) => item.url));
+      success(
+        "Batch Processing Started",
+        `Processing ${validUrls.length} Figma file(s)`,
+      );
+      setUrlsText("");
+      setValidatedUrls([]);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to process URLs"
-      error("Batch Processing Failed", errorMessage)
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to process URLs";
+      error("Batch Processing Failed", errorMessage);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const removeUrl = (indexToRemove: number) => {
-    const urls = urlsText.split("\n").filter((_, index) => index !== indexToRemove)
-    const newText = urls.join("\n")
-    handleUrlsChange(newText)
-  }
+    const urls = urlsText
+      .split("\n")
+      .filter((_, index) => index !== indexToRemove);
+    const newText = urls.join("\n");
+    handleUrlsChange(newText);
+  };
 
-  const validCount = validatedUrls.filter((item) => item.isValid).length
-  const invalidCount = validatedUrls.filter((item) => !item.isValid).length
-  const isFormDisabled = disabled || isProcessing || isSubmitting
-  const canSubmit = validCount > 0 && !isFormDisabled
+  const validCount = validatedUrls.filter((item) => item.isValid).length;
+  const invalidCount = validatedUrls.filter((item) => !item.isValid).length;
+  const isFormDisabled = disabled || isProcessing || isSubmitting;
+  const canSubmit = validCount > 0 && !isFormDisabled;
 
   return (
     <Card>
@@ -112,7 +131,9 @@ export function BatchImportForm({ onSubmit, isProcessing = false, disabled = fal
           <Upload className="h-5 w-5" />
           Batch Import
         </CardTitle>
-        <CardDescription>Import multiple Figma files at once (one URL per line)</CardDescription>
+        <CardDescription>
+          Import multiple Figma files at once (one URL per line)
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -157,7 +178,9 @@ https://www.figma.com/proto/ghi789/prototype-1`}
                 <div
                   key={index}
                   className={`flex items-center gap-2 text-xs p-2 rounded ${
-                    item.isValid ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"
+                    item.isValid
+                      ? "bg-green-50 border border-green-200"
+                      : "bg-red-50 border border-red-200"
                   }`}
                 >
                   {item.isValid ? (
@@ -168,7 +191,9 @@ https://www.figma.com/proto/ghi789/prototype-1`}
 
                   <div className="flex-1 min-w-0">
                     <p className="truncate font-mono">{item.url}</p>
-                    {item.error && <p className="text-red-600 mt-1">{item.error}</p>}
+                    {item.error && (
+                      <p className="text-red-600 mt-1">{item.error}</p>
+                    )}
                   </div>
 
                   <Button
@@ -211,5 +236,5 @@ https://www.figma.com/proto/ghi789/prototype-1`}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

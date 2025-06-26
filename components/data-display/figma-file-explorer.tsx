@@ -1,66 +1,90 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
-import { Search, FileText, ImageIcon, Layers, Clock, ExternalLink, RefreshCw } from "lucide-react"
-import type { ProcessingResult } from "@/types/figma"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import {
+  Search,
+  FileText,
+  ImageIcon,
+  Layers,
+  Clock,
+  ExternalLink,
+  RefreshCw,
+} from "lucide-react";
+import type { ProcessingResult } from "@/types/figma";
 
 interface FigmaFileExplorerProps {
-  results: ProcessingResult[]
-  selectedFiles: string[]
-  onSelectFiles: (fileIds: string[]) => void
-  onRetryFile: (fileId: string) => void
+  results: ProcessingResult[];
+  selectedFiles: string[];
+  onSelectFiles: (fileIds: string[]) => void;
+  onRetryFile: (fileId: string) => void;
 }
 
-export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRetryFile }: FigmaFileExplorerProps) {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortBy, setSortBy] = useState<"name" | "date" | "size">("name")
+export function FigmaFileExplorer({
+  results,
+  selectedFiles,
+  onSelectFiles,
+  onRetryFile,
+}: FigmaFileExplorerProps) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"name" | "date" | "size">("name");
 
-  const filteredResults = results.filter((result) => result.data.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredResults = results.filter((result) =>
+    result.data.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   const sortedResults = [...filteredResults].sort((a, b) => {
     switch (sortBy) {
       case "name":
-        return a.data.name.localeCompare(b.data.name)
+        return a.data.name.localeCompare(b.data.name);
       case "date":
-        return new Date(b.data.lastModified).getTime() - new Date(a.data.lastModified).getTime()
+        return (
+          new Date(b.data.lastModified).getTime() -
+          new Date(a.data.lastModified).getTime()
+        );
       case "size":
-        return Object.keys(b.data.components).length - Object.keys(a.data.components).length
+        return (
+          Object.keys(b.data.components).length -
+          Object.keys(a.data.components).length
+        );
       default:
-        return 0
+        return 0;
     }
-  })
+  });
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      onSelectFiles(sortedResults.map((r) => r.id))
+      onSelectFiles(sortedResults.map((r) => r.id));
     } else {
-      onSelectFiles([])
+      onSelectFiles([]);
     }
-  }
+  };
 
   const handleSelectFile = (fileId: string, checked: boolean) => {
     if (checked) {
-      onSelectFiles([...selectedFiles, fileId])
+      onSelectFiles([...selectedFiles, fileId]);
     } else {
-      onSelectFiles(selectedFiles.filter((id) => id !== fileId))
+      onSelectFiles(selectedFiles.filter((id) => id !== fileId));
     }
-  }
+  };
 
   const getNodeCount = (result: ProcessingResult) => {
     const countNodes = (node: any): number => {
-      let count = 1
+      let count = 1;
       if (node.children) {
-        count += node.children.reduce((sum: number, child: any) => sum + countNodes(child), 0)
+        count += node.children.reduce(
+          (sum: number, child: any) => sum + countNodes(child),
+          0,
+        );
       }
-      return count
-    }
-    return countNodes(result.data.document)
-  }
+      return count;
+    };
+    return countNodes(result.data.document);
+  };
 
   return (
     <div className="space-y-4">
@@ -79,7 +103,9 @@ export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRet
         <div className="flex items-center space-x-2">
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as "name" | "date" | "size")}
+            onChange={(e) =>
+              setSortBy(e.target.value as "name" | "date" | "size")
+            }
             className="px-3 py-2 border rounded-md text-sm"
           >
             <option value="name">Sort by Name</option>
@@ -90,7 +116,10 @@ export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRet
           <div className="flex items-center space-x-2">
             <Checkbox
               id="select-all"
-              checked={selectedFiles.length === sortedResults.length && sortedResults.length > 0}
+              checked={
+                selectedFiles.length === sortedResults.length &&
+                sortedResults.length > 0
+              }
               onCheckedChange={handleSelectAll}
             />
             <label htmlFor="select-all" className="text-sm">
@@ -109,15 +138,24 @@ export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRet
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     checked={selectedFiles.includes(result.id)}
-                    onCheckedChange={(checked) => handleSelectFile(result.id, checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      handleSelectFile(result.id, checked as boolean)
+                    }
                   />
                   <FileText className="w-4 h-4 text-blue-600" />
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => window.open(result.url, "_blank")}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.open(result.url, "_blank")}
+                >
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </div>
-              <CardTitle className="text-base truncate" title={result.data.name}>
+              <CardTitle
+                className="text-base truncate"
+                title={result.data.name}
+              >
                 {result.data.name}
               </CardTitle>
             </CardHeader>
@@ -142,7 +180,9 @@ export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRet
                 </div>
                 <div className="flex items-center space-x-1">
                   <ImageIcon className="w-3 h-3 text-gray-500" />
-                  <span>{Object.keys(result.data.components).length} components</span>
+                  <span>
+                    {Object.keys(result.data.components).length} components
+                  </span>
                 </div>
               </div>
 
@@ -150,7 +190,9 @@ export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRet
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>Last Modified</span>
-                  <span>{new Date(result.data.lastModified).toLocaleDateString()}</span>
+                  <span>
+                    {new Date(result.data.lastModified).toLocaleDateString()}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>Processing Time</span>
@@ -168,7 +210,11 @@ export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRet
                   <Clock className="w-3 h-3 mr-1" />
                   {result.timestamp.toLocaleTimeString()}
                 </Badge>
-                <Button variant="ghost" size="sm" onClick={() => onRetryFile(result.id)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onRetryFile(result.id)}
+                >
                   <RefreshCw className="w-4 h-4" />
                 </Button>
               </div>
@@ -186,11 +232,13 @@ export function FigmaFileExplorer({ results, selectedFiles, onSelectFiles, onRet
               {searchTerm ? "No files found" : "No files processed"}
             </h3>
             <p className="text-gray-600">
-              {searchTerm ? `No files match "${searchTerm}"` : "Process some Figma files to see them here"}
+              {searchTerm
+                ? `No files match "${searchTerm}"`
+                : "Process some Figma files to see them here"}
             </p>
           </CardContent>
         </Card>
       )}
     </div>
-  )
+  );
 }

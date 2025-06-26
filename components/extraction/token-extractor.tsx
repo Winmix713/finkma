@@ -1,18 +1,24 @@
-"use client"
+"use client";
 
 /**
  * Token extraction interface component
  */
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import {
   Play,
   Square,
@@ -23,20 +29,23 @@ import {
   GhostIcon as Shadow,
   CornerDownRight,
   Loader2,
-} from "lucide-react"
+} from "lucide-react";
 
-import type { FigmaApiResponse } from "@/types/figma"
-import type { ExtractionOptions, ExtractionProgress } from "@/services/design-system-extractor"
-import type { TokenCategory } from "@/types/design-tokens"
+import type { FigmaApiResponse } from "@/types/figma";
+import type {
+  ExtractionOptions,
+  ExtractionProgress,
+} from "@/services/design-system-extractor";
+import type { TokenCategory } from "@/types/design-tokens";
 
 interface TokenExtractorProps {
-  figmaData: FigmaApiResponse
-  options: ExtractionOptions
-  onOptionsChange: (options: ExtractionOptions) => void
-  onExtract: () => void
-  isExtracting: boolean
-  progress?: ExtractionProgress | null
-  onCancel: () => void
+  figmaData: FigmaApiResponse;
+  options: ExtractionOptions;
+  onOptionsChange: (options: ExtractionOptions) => void;
+  onExtract: () => void;
+  isExtracting: boolean;
+  progress?: ExtractionProgress | null;
+  onCancel: () => void;
 }
 
 const CATEGORY_ICONS = {
@@ -50,7 +59,7 @@ const CATEGORY_ICONS = {
   "z-index": Settings,
   animation: Settings,
   breakpoint: Settings,
-} as const
+} as const;
 
 const CATEGORY_LABELS = {
   color: "Colors",
@@ -63,7 +72,7 @@ const CATEGORY_LABELS = {
   "z-index": "Z-Index",
   animation: "Animation",
   breakpoint: "Breakpoints",
-} as const
+} as const;
 
 export function TokenExtractor({
   figmaData,
@@ -74,25 +83,27 @@ export function TokenExtractor({
   progress,
   onCancel,
 }: TokenExtractorProps) {
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
   const updateOptions = (updates: Partial<ExtractionOptions>) => {
-    onOptionsChange({ ...options, ...updates })
-  }
+    onOptionsChange({ ...options, ...updates });
+  };
 
   const toggleCategory = (category: TokenCategory) => {
     const newCategories = options.categories.includes(category)
       ? options.categories.filter((c) => c !== category)
-      : [...options.categories, category]
+      : [...options.categories, category];
 
-    updateOptions({ categories: newCategories })
-  }
+    updateOptions({ categories: newCategories });
+  };
 
-  const updateNamingConvention = (updates: Partial<ExtractionOptions["namingConvention"]>) => {
+  const updateNamingConvention = (
+    updates: Partial<ExtractionOptions["namingConvention"]>,
+  ) => {
     updateOptions({
       namingConvention: { ...options.namingConvention, ...updates },
-    })
-  }
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -103,7 +114,9 @@ export function TokenExtractor({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2">
                 <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                <span className="font-medium text-blue-900">Extracting Tokens</span>
+                <span className="font-medium text-blue-900">
+                  Extracting Tokens
+                </span>
               </div>
               <Button variant="outline" size="sm" onClick={onCancel}>
                 <Square className="w-3 h-3 mr-1" />
@@ -114,13 +127,19 @@ export function TokenExtractor({
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-blue-700">{progress.currentItem}</span>
-                <span className="text-blue-600">{Math.round(progress.progress)}%</span>
+                <span className="text-blue-600">
+                  {Math.round(progress.progress)}%
+                </span>
               </div>
               <Progress value={progress.progress} className="h-2" />
               <div className="text-xs text-blue-600">
-                {progress.processedItems} of {progress.totalItems} items processed
+                {progress.processedItems} of {progress.totalItems} items
+                processed
                 {progress.estimatedTimeRemaining && (
-                  <span className="ml-2">• ~{Math.round(progress.estimatedTimeRemaining / 1000)}s remaining</span>
+                  <span className="ml-2">
+                    • ~{Math.round(progress.estimatedTimeRemaining / 1000)}s
+                    remaining
+                  </span>
                 )}
               </div>
             </div>
@@ -141,7 +160,9 @@ export function TokenExtractor({
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium">Last Modified:</span>
-              <span className="text-sm text-gray-600">{new Date(figmaData.lastModified).toLocaleDateString()}</span>
+              <span className="text-sm text-gray-600">
+                {new Date(figmaData.lastModified).toLocaleDateString()}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm font-medium">Version:</span>
@@ -155,29 +176,38 @@ export function TokenExtractor({
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Token Categories</CardTitle>
-          <p className="text-sm text-gray-600">Select which types of design tokens to extract from the Figma file.</p>
+          <p className="text-sm text-gray-600">
+            Select which types of design tokens to extract from the Figma file.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Object.entries(CATEGORY_LABELS).map(([category, label]) => {
-              const Icon = CATEGORY_ICONS[category as TokenCategory]
-              const isSelected = options.categories.includes(category as TokenCategory)
+              const Icon = CATEGORY_ICONS[category as TokenCategory];
+              const isSelected = options.categories.includes(
+                category as TokenCategory,
+              );
 
               return (
                 <div
                   key={category}
                   className={`p-3 border rounded-lg cursor-pointer transition-all ${
-                    isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+                    isSelected
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                   onClick={() => toggleCategory(category as TokenCategory)}
                 >
                   <div className="flex items-center space-x-2">
-                    <Checkbox checked={isSelected} onChange={() => toggleCategory(category as TokenCategory)} />
+                    <Checkbox
+                      checked={isSelected}
+                      onChange={() => toggleCategory(category as TokenCategory)}
+                    />
                     <Icon className="w-4 h-4" />
                     <Label className="cursor-pointer">{label}</Label>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </CardContent>
@@ -193,7 +223,9 @@ export function TokenExtractor({
             <Checkbox
               id="include-usage"
               checked={options.includeUsage}
-              onCheckedChange={(checked) => updateOptions({ includeUsage: !!checked })}
+              onCheckedChange={(checked) =>
+                updateOptions({ includeUsage: !!checked })
+              }
             />
             <Label htmlFor="include-usage">Include usage statistics</Label>
           </div>
@@ -202,12 +234,20 @@ export function TokenExtractor({
             <Checkbox
               id="validate-tokens"
               checked={options.validateTokens}
-              onCheckedChange={(checked) => updateOptions({ validateTokens: !!checked })}
+              onCheckedChange={(checked) =>
+                updateOptions({ validateTokens: !!checked })
+              }
             />
-            <Label htmlFor="validate-tokens">Validate tokens during extraction</Label>
+            <Label htmlFor="validate-tokens">
+              Validate tokens during extraction
+            </Label>
           </div>
 
-          <Button variant="outline" onClick={() => setShowAdvancedOptions(!showAdvancedOptions)} className="w-full">
+          <Button
+            variant="outline"
+            onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+            className="w-full"
+          >
             {showAdvancedOptions ? "Hide" : "Show"} Advanced Options
           </Button>
 
@@ -224,7 +264,9 @@ export function TokenExtractor({
                     </Label>
                     <Select
                       value={options.namingConvention.style}
-                      onValueChange={(value: any) => updateNamingConvention({ style: value })}
+                      onValueChange={(value: any) =>
+                        updateNamingConvention({ style: value })
+                      }
                     >
                       <SelectTrigger id="naming-style">
                         <SelectValue />
@@ -245,7 +287,9 @@ export function TokenExtractor({
                     <Input
                       id="naming-prefix"
                       value={options.namingConvention.prefix || ""}
-                      onChange={(e) => updateNamingConvention({ prefix: e.target.value })}
+                      onChange={(e) =>
+                        updateNamingConvention({ prefix: e.target.value })
+                      }
                       placeholder="e.g., ds, ui"
                     />
                   </div>
@@ -258,7 +302,9 @@ export function TokenExtractor({
                   <Input
                     id="naming-suffix"
                     value={options.namingConvention.suffix || ""}
-                    onChange={(e) => updateNamingConvention({ suffix: e.target.value })}
+                    onChange={(e) =>
+                      updateNamingConvention({ suffix: e.target.value })
+                    }
                     placeholder="e.g., token, var"
                   />
                 </div>
@@ -287,21 +333,29 @@ export function TokenExtractor({
             </div>
             <div className="flex justify-between">
               <span className="text-sm">Naming Style:</span>
-              <span className="text-sm text-gray-600">{options.namingConvention.style}</span>
+              <span className="text-sm text-gray-600">
+                {options.namingConvention.style}
+              </span>
             </div>
             {options.namingConvention.prefix && (
               <div className="flex justify-between">
                 <span className="text-sm">Prefix:</span>
-                <span className="text-sm text-gray-600">{options.namingConvention.prefix}</span>
+                <span className="text-sm text-gray-600">
+                  {options.namingConvention.prefix}
+                </span>
               </div>
             )}
             <div className="flex justify-between">
               <span className="text-sm">Include Usage:</span>
-              <span className="text-sm text-gray-600">{options.includeUsage ? "Yes" : "No"}</span>
+              <span className="text-sm text-gray-600">
+                {options.includeUsage ? "Yes" : "No"}
+              </span>
             </div>
             <div className="flex justify-between">
               <span className="text-sm">Validate Tokens:</span>
-              <span className="text-sm text-gray-600">{options.validateTokens ? "Yes" : "No"}</span>
+              <span className="text-sm text-gray-600">
+                {options.validateTokens ? "Yes" : "No"}
+              </span>
             </div>
           </div>
         </CardContent>
@@ -330,8 +384,10 @@ export function TokenExtractor({
       </div>
 
       {options.categories.length === 0 && (
-        <p className="text-center text-sm text-gray-500">Please select at least one token category to extract.</p>
+        <p className="text-center text-sm text-gray-500">
+          Please select at least one token category to extract.
+        </p>
       )}
     </div>
-  )
+  );
 }

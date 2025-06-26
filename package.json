@@ -6,6 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
+    "test": "jest --passWithNoTests",
     "start": "next start"
   },
   "dependencies": {

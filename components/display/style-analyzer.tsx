@@ -1,50 +1,66 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Palette, Search, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react"
+import { useState, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import {
+  Palette,
+  Search,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
 
 interface StyleAnalyzerProps {
   styles: Array<{
-    id: string
-    name: string
-    description: string
-    type: string
-    usage: number
-  }>
-  onStyleSelect?: (styleId: string) => void
+    id: string;
+    name: string;
+    description: string;
+    type: string;
+    usage: number;
+  }>;
+  onStyleSelect?: (styleId: string) => void;
 }
 
 export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [selectedType, setSelectedType] = useState<string>("")
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState<string>("");
 
   // Get unique style types
   const styleTypes = useMemo(() => {
-    const types = new Set(styles.map((style) => style.type))
-    return Array.from(types).sort()
-  }, [styles])
+    const types = new Set(styles.map((style) => style.type));
+    return Array.from(types).sort();
+  }, [styles]);
 
   // Calculate style statistics
   const styleStats = useMemo(() => {
-    const totalUsage = styles.reduce((sum, style) => sum + style.usage, 0)
-    const averageUsage = totalUsage / styles.length || 0
+    const totalUsage = styles.reduce((sum, style) => sum + style.usage, 0);
+    const averageUsage = totalUsage / styles.length || 0;
 
-    const unusedStyles = styles.filter((style) => style.usage === 0).length
-    const overusedStyles = styles.filter((style) => style.usage > averageUsage * 2).length
-    const underusedStyles = styles.filter((style) => style.usage > 0 && style.usage < averageUsage * 0.5).length
+    const unusedStyles = styles.filter((style) => style.usage === 0).length;
+    const overusedStyles = styles.filter(
+      (style) => style.usage > averageUsage * 2,
+    ).length;
+    const underusedStyles = styles.filter(
+      (style) => style.usage > 0 && style.usage < averageUsage * 0.5,
+    ).length;
 
     const typeDistribution = styles.reduce(
       (acc, style) => {
-        acc[style.type] = (acc[style.type] || 0) + 1
-        return acc
+        acc[style.type] = (acc[style.type] || 0) + 1;
+        return acc;
       },
       {} as Record<string, number>,
-    )
+    );
 
     return {
       total: styles.length,
@@ -54,8 +70,8 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
       overusedStyles,
       underusedStyles,
       typeDistribution,
-    }
-  }, [styles])
+    };
+  }, [styles]);
 
   // Filter styles
   const filteredStyles = useMemo(() => {
@@ -63,33 +79,34 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
       const matchesSearch =
         !searchQuery ||
         style.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        style.description.toLowerCase().includes(searchQuery.toLowerCase())
+        style.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesType = !selectedType || style.type === selectedType
+      const matchesType = !selectedType || style.type === selectedType;
 
-      return matchesSearch && matchesType
-    })
-  }, [styles, searchQuery, selectedType])
+      return matchesSearch && matchesType;
+    });
+  }, [styles, searchQuery, selectedType]);
 
   const getUsageColor = (usage: number) => {
-    if (usage === 0) return "text-red-600"
-    if (usage < styleStats.averageUsage * 0.5) return "text-yellow-600"
-    if (usage > styleStats.averageUsage * 2) return "text-blue-600"
-    return "text-green-600"
-  }
+    if (usage === 0) return "text-red-600";
+    if (usage < styleStats.averageUsage * 0.5) return "text-yellow-600";
+    if (usage > styleStats.averageUsage * 2) return "text-blue-600";
+    return "text-green-600";
+  };
 
   const getUsageIcon = (usage: number) => {
-    if (usage === 0) return <AlertTriangle className="h-4 w-4 text-red-600" />
-    if (usage < styleStats.averageUsage * 0.5) return <AlertTriangle className="h-4 w-4 text-yellow-600" />
-    return <CheckCircle className="h-4 w-4 text-green-600" />
-  }
+    if (usage === 0) return <AlertTriangle className="h-4 w-4 text-red-600" />;
+    if (usage < styleStats.averageUsage * 0.5)
+      return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
+    return <CheckCircle className="h-4 w-4 text-green-600" />;
+  };
 
   const getUsageLabel = (usage: number) => {
-    if (usage === 0) return "Unused"
-    if (usage < styleStats.averageUsage * 0.5) return "Underused"
-    if (usage > styleStats.averageUsage * 2) return "Overused"
-    return "Normal"
-  }
+    if (usage === 0) return "Unused";
+    if (usage < styleStats.averageUsage * 0.5) return "Underused";
+    if (usage > styleStats.averageUsage * 2) return "Overused";
+    return "Normal";
+  };
 
   return (
     <div className="space-y-6">
@@ -100,26 +117,36 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
             <Palette className="h-5 w-5" />
             Style Analysis
           </CardTitle>
-          <CardDescription>Analysis of style usage patterns and optimization opportunities</CardDescription>
+          <CardDescription>
+            Analysis of style usage patterns and optimization opportunities
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
             {/* Overview Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center space-y-2">
-                <p className="text-2xl font-bold text-blue-600">{styleStats.total}</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {styleStats.total}
+                </p>
                 <p className="text-sm text-muted-foreground">Total Styles</p>
               </div>
               <div className="text-center space-y-2">
-                <p className="text-2xl font-bold text-green-600">{styleStats.totalUsage}</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {styleStats.totalUsage}
+                </p>
                 <p className="text-sm text-muted-foreground">Total Usage</p>
               </div>
               <div className="text-center space-y-2">
-                <p className="text-2xl font-bold text-yellow-600">{styleStats.unusedStyles}</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {styleStats.unusedStyles}
+                </p>
                 <p className="text-sm text-muted-foreground">Unused</p>
               </div>
               <div className="text-center space-y-2">
-                <p className="text-2xl font-bold text-purple-600">{Math.round(styleStats.averageUsage)}</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {Math.round(styleStats.averageUsage)}
+                </p>
                 <p className="text-sm text-muted-foreground">Avg Usage</p>
               </div>
             </div>
@@ -128,20 +155,22 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
             <div className="space-y-3">
               <h4 className="text-sm font-medium">Style Type Distribution</h4>
               <div className="space-y-2">
-                {Object.entries(styleStats.typeDistribution).map(([type, count]) => {
-                  const percentage = (count / styleStats.total) * 100
-                  return (
-                    <div key={type} className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm capitalize">{type}</span>
-                        <span className="text-sm text-muted-foreground">
-                          {count} ({percentage.toFixed(1)}%)
-                        </span>
+                {Object.entries(styleStats.typeDistribution).map(
+                  ([type, count]) => {
+                    const percentage = (count / styleStats.total) * 100;
+                    return (
+                      <div key={type} className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm capitalize">{type}</span>
+                          <span className="text-sm text-muted-foreground">
+                            {count} ({percentage.toFixed(1)}%)
+                          </span>
+                        </div>
+                        <Progress value={percentage} className="h-2" />
                       </div>
-                      <Progress value={percentage} className="h-2" />
-                    </div>
-                  )
-                })}
+                    );
+                  },
+                )}
               </div>
             </div>
           </div>
@@ -152,7 +181,9 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
       <Card>
         <CardHeader>
           <CardTitle>Style Browser</CardTitle>
-          <CardDescription>Browse and analyze individual styles</CardDescription>
+          <CardDescription>
+            Browse and analyze individual styles
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Search and Filters */}
@@ -211,7 +242,9 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
                     </Badge>
                   </div>
                   {style.description && (
-                    <p className="text-xs text-muted-foreground line-clamp-1">{style.description}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-1">
+                      {style.description}
+                    </p>
                   )}
                 </div>
 
@@ -219,9 +252,15 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
                   <div className="text-right space-y-1">
                     <div className="flex items-center gap-1">
                       {getUsageIcon(style.usage)}
-                      <span className={`text-sm font-medium ${getUsageColor(style.usage)}`}>{style.usage}</span>
+                      <span
+                        className={`text-sm font-medium ${getUsageColor(style.usage)}`}
+                      >
+                        {style.usage}
+                      </span>
                     </div>
-                    <p className="text-xs text-muted-foreground">{getUsageLabel(style.usage)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {getUsageLabel(style.usage)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -232,13 +271,15 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
           {filteredStyles.length === 0 && (
             <div className="text-center py-8 space-y-2">
               <Palette className="h-12 w-12 text-muted-foreground mx-auto" />
-              <p className="text-sm text-muted-foreground">No styles found matching your criteria</p>
+              <p className="text-sm text-muted-foreground">
+                No styles found matching your criteria
+              </p>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                  setSearchQuery("")
-                  setSelectedType("")
+                  setSearchQuery("");
+                  setSelectedType("");
                 }}
               >
                 Clear Filters
@@ -255,7 +296,9 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
             <TrendingUp className="h-5 w-5" />
             Style Recommendations
           </CardTitle>
-          <CardDescription>Suggestions for optimizing your style system</CardDescription>
+          <CardDescription>
+            Suggestions for optimizing your style system
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -263,9 +306,12 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
               <div className="flex items-start gap-3 p-3 rounded-md bg-red-50 border border-red-200">
                 <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-red-900">Remove Unused Styles</p>
+                  <p className="text-sm font-medium text-red-900">
+                    Remove Unused Styles
+                  </p>
                   <p className="text-xs text-red-800">
-                    {styleStats.unusedStyles} styles are not being used and can be safely removed to reduce clutter.
+                    {styleStats.unusedStyles} styles are not being used and can
+                    be safely removed to reduce clutter.
                   </p>
                 </div>
               </div>
@@ -275,9 +321,12 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
               <div className="flex items-start gap-3 p-3 rounded-md bg-yellow-50 border border-yellow-200">
                 <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-yellow-900">Review Underused Styles</p>
+                  <p className="text-sm font-medium text-yellow-900">
+                    Review Underused Styles
+                  </p>
                   <p className="text-xs text-yellow-800">
-                    {styleStats.underusedStyles} styles have low usage. Consider consolidating or promoting them.
+                    {styleStats.underusedStyles} styles have low usage. Consider
+                    consolidating or promoting them.
                   </p>
                 </div>
               </div>
@@ -287,9 +336,12 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
               <div className="flex items-start gap-3 p-3 rounded-md bg-blue-50 border border-blue-200">
                 <TrendingUp className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-blue-900">Popular Styles</p>
+                  <p className="text-sm font-medium text-blue-900">
+                    Popular Styles
+                  </p>
                   <p className="text-xs text-blue-800">
-                    {styleStats.overusedStyles} styles are heavily used. Ensure they're well-documented and maintained.
+                    {styleStats.overusedStyles} styles are heavily used. Ensure
+                    they're well-documented and maintained.
                   </p>
                 </div>
               </div>
@@ -298,10 +350,13 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
             <div className="flex items-start gap-3 p-3 rounded-md bg-green-50 border border-green-200">
               <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
               <div className="space-y-1">
-                <p className="text-sm font-medium text-green-900">Style System Health</p>
+                <p className="text-sm font-medium text-green-900">
+                  Style System Health
+                </p>
                 <p className="text-xs text-green-800">
-                  Your style system has {styleStats.total} styles with an average usage of{" "}
-                  {Math.round(styleStats.averageUsage)} instances each.
+                  Your style system has {styleStats.total} styles with an
+                  average usage of {Math.round(styleStats.averageUsage)}{" "}
+                  instances each.
                 </p>
               </div>
             </div>
@@ -309,5 +364,5 @@ export function StyleAnalyzer({ styles, onStyleSelect }: StyleAnalyzerProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

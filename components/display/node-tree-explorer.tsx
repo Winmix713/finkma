@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { useState, useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   ChevronRight,
   ChevronDown,
@@ -18,43 +18,49 @@ import {
   Circle,
   ImageIcon,
   Layers,
-} from "lucide-react"
-import type { FigmaNode, SearchFilter } from "@/types/figma"
+} from "lucide-react";
+import type { FigmaNode, SearchFilter } from "@/types/figma";
 
 interface NodeTreeExplorerProps {
-  document: FigmaNode
-  onNodeSelect?: (node: FigmaNode) => void
-  selectedNodeId?: string
+  document: FigmaNode;
+  onNodeSelect?: (node: FigmaNode) => void;
+  selectedNodeId?: string;
 }
 
-export function NodeTreeExplorer({ document, onNodeSelect, selectedNodeId }: NodeTreeExplorerProps) {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set([document.id]))
-  const [filters, setFilters] = useState<SearchFilter>({})
-  const [showFilters, setShowFilters] = useState(false)
+export function NodeTreeExplorer({
+  document,
+  onNodeSelect,
+  selectedNodeId,
+}: NodeTreeExplorerProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(
+    new Set([document.id]),
+  );
+  const [filters, setFilters] = useState<SearchFilter>({});
+  const [showFilters, setShowFilters] = useState(false);
 
   const getNodeIcon = (nodeType: string) => {
     switch (nodeType) {
       case "COMPONENT":
       case "COMPONENT_SET":
-        return <Component className="w-4 h-4 text-blue-600" />
+        return <Component className="w-4 h-4 text-blue-600" />;
       case "INSTANCE":
-        return <Component className="w-4 h-4 text-purple-600" />
+        return <Component className="w-4 h-4 text-purple-600" />;
       case "TEXT":
-        return <Type className="w-4 h-4 text-green-600" />
+        return <Type className="w-4 h-4 text-green-600" />;
       case "RECTANGLE":
       case "FRAME":
-        return <Square className="w-4 h-4 text-orange-600" />
+        return <Square className="w-4 h-4 text-orange-600" />;
       case "ELLIPSE":
-        return <Circle className="w-4 h-4 text-pink-600" />
+        return <Circle className="w-4 h-4 text-pink-600" />;
       case "IMAGE":
-        return <ImageIcon className="w-4 h-4 text-indigo-600" />
+        return <ImageIcon className="w-4 h-4 text-indigo-600" />;
       case "GROUP":
-        return <Layers className="w-4 h-4 text-gray-600" />
+        return <Layers className="w-4 h-4 text-gray-600" />;
       default:
-        return <Square className="w-4 h-4 text-gray-400" />
+        return <Square className="w-4 h-4 text-gray-400" />;
     }
-  }
+  };
 
   const getNodeTypeColor = (nodeType: string) => {
     const colors = {
@@ -64,89 +70,103 @@ export function NodeTreeExplorer({ document, onNodeSelect, selectedNodeId }: Nod
       FRAME: "bg-orange-100 text-orange-800",
       GROUP: "bg-gray-100 text-gray-800",
       IMAGE: "bg-indigo-100 text-indigo-800",
-    }
-    return colors[nodeType as keyof typeof colors] || "bg-gray-100 text-gray-600"
-  }
+    };
+    return (
+      colors[nodeType as keyof typeof colors] || "bg-gray-100 text-gray-600"
+    );
+  };
 
   const filteredNodes = useMemo(() => {
     const filterNode = (node: FigmaNode): boolean => {
       // Search query filter
-      if (searchQuery && !node.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false
+      if (
+        searchQuery &&
+        !node.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
       }
 
       // Node type filter
-      if (filters.nodeType && filters.nodeType.length > 0 && !filters.nodeType.includes(node.type)) {
-        return false
+      if (
+        filters.nodeType &&
+        filters.nodeType.length > 0 &&
+        !filters.nodeType.includes(node.type)
+      ) {
+        return false;
       }
 
       // Visibility filter
       if (filters.visible !== undefined && node.visible !== filters.visible) {
-        return false
+        return false;
       }
 
       // Locked filter
       if (filters.locked !== undefined && node.locked !== filters.locked) {
-        return false
+        return false;
       }
 
       // Has children filter
       if (filters.hasChildren !== undefined) {
-        const hasChildren = node.children && node.children.length > 0
+        const hasChildren = node.children && node.children.length > 0;
         if (hasChildren !== filters.hasChildren) {
-          return false
+          return false;
         }
       }
 
-      return true
-    }
+      return true;
+    };
 
     const filterTree = (node: FigmaNode): FigmaNode | null => {
-      const filteredChildren = node.children?.map((child) => filterTree(child)).filter(Boolean) as FigmaNode[]
+      const filteredChildren = node.children
+        ?.map((child) => filterTree(child))
+        .filter(Boolean) as FigmaNode[];
 
-      if (filterNode(node) || (filteredChildren && filteredChildren.length > 0)) {
+      if (
+        filterNode(node) ||
+        (filteredChildren && filteredChildren.length > 0)
+      ) {
         return {
           ...node,
           children: filteredChildren,
-        }
+        };
       }
 
-      return null
-    }
+      return null;
+    };
 
-    return filterTree(document)
-  }, [document, searchQuery, filters])
+    return filterTree(document);
+  }, [document, searchQuery, filters]);
 
   const toggleExpanded = (nodeId: string) => {
-    const newExpanded = new Set(expandedNodes)
+    const newExpanded = new Set(expandedNodes);
     if (newExpanded.has(nodeId)) {
-      newExpanded.delete(nodeId)
+      newExpanded.delete(nodeId);
     } else {
-      newExpanded.add(nodeId)
+      newExpanded.add(nodeId);
     }
-    setExpandedNodes(newExpanded)
-  }
+    setExpandedNodes(newExpanded);
+  };
 
   const expandAll = () => {
-    const allNodeIds = new Set<string>()
+    const allNodeIds = new Set<string>();
     const collectIds = (node: FigmaNode) => {
-      allNodeIds.add(node.id)
-      node.children?.forEach(collectIds)
-    }
-    collectIds(document)
-    setExpandedNodes(allNodeIds)
-  }
+      allNodeIds.add(node.id);
+      node.children?.forEach(collectIds);
+    };
+    collectIds(document);
+    setExpandedNodes(allNodeIds);
+  };
 
   const collapseAll = () => {
-    setExpandedNodes(new Set([document.id]))
-  }
+    setExpandedNodes(new Set([document.id]));
+  };
 
   const renderNode = (node: FigmaNode, depth = 0) => {
-    if (!node) return null
+    if (!node) return null;
 
-    const hasChildren = node.children && node.children.length > 0
-    const isExpanded = expandedNodes.has(node.id)
-    const isSelected = selectedNodeId === node.id
+    const hasChildren = node.children && node.children.length > 0;
+    const isExpanded = expandedNodes.has(node.id);
+    const isSelected = selectedNodeId === node.id;
 
     return (
       <div key={node.id} className="select-none">
@@ -163,11 +183,15 @@ export function NodeTreeExplorer({ document, onNodeSelect, selectedNodeId }: Nod
               size="sm"
               className="w-4 h-4 p-0"
               onClick={(e) => {
-                e.stopPropagation()
-                toggleExpanded(node.id)
+                e.stopPropagation();
+                toggleExpanded(node.id);
               }}
             >
-              {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              {isExpanded ? (
+                <ChevronDown className="w-3 h-3" />
+              ) : (
+                <ChevronRight className="w-3 h-3" />
+              )}
             </Button>
           ) : (
             <div className="w-4 h-4" />
@@ -180,19 +204,28 @@ export function NodeTreeExplorer({ document, onNodeSelect, selectedNodeId }: Nod
           </span>
 
           <div className="flex items-center space-x-1">
-            <Badge variant="secondary" className={`text-xs ${getNodeTypeColor(node.type)}`}>
+            <Badge
+              variant="secondary"
+              className={`text-xs ${getNodeTypeColor(node.type)}`}
+            >
               {node.type}
             </Badge>
 
-            {node.visible === false && <EyeOff className="w-3 h-3 text-gray-400" />}
+            {node.visible === false && (
+              <EyeOff className="w-3 h-3 text-gray-400" />
+            )}
             {node.locked && <Lock className="w-3 h-3 text-red-400" />}
           </div>
         </div>
 
-        {hasChildren && isExpanded && <div>{node.children?.map((child) => renderNode(child, depth + 1))}</div>}
+        {hasChildren && isExpanded && (
+          <div>
+            {node.children?.map((child) => renderNode(child, depth + 1))}
+          </div>
+        )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <Card className="h-full">
@@ -232,7 +265,12 @@ export function NodeTreeExplorer({ document, onNodeSelect, selectedNodeId }: Nod
             </Button>
 
             {Object.keys(filters).length > 0 && (
-              <Button variant="ghost" size="sm" onClick={() => setFilters({})} className="text-red-600">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setFilters({})}
+                className="text-red-600"
+              >
                 Clear Filters
               </Button>
             )}
@@ -243,17 +281,29 @@ export function NodeTreeExplorer({ document, onNodeSelect, selectedNodeId }: Nod
               <div>
                 <label className="text-sm font-medium">Node Types:</label>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {["COMPONENT", "INSTANCE", "TEXT", "FRAME", "GROUP", "IMAGE"].map((type) => (
+                  {[
+                    "COMPONENT",
+                    "INSTANCE",
+                    "TEXT",
+                    "FRAME",
+                    "GROUP",
+                    "IMAGE",
+                  ].map((type) => (
                     <Badge
                       key={type}
-                      variant={filters.nodeType?.includes(type) ? "default" : "outline"}
+                      variant={
+                        filters.nodeType?.includes(type) ? "default" : "outline"
+                      }
                       className="cursor-pointer text-xs"
                       onClick={() => {
-                        const currentTypes = filters.nodeType || []
+                        const currentTypes = filters.nodeType || [];
                         const newTypes = currentTypes.includes(type)
                           ? currentTypes.filter((t) => t !== type)
-                          : [...currentTypes, type]
-                        setFilters({ ...filters, nodeType: newTypes.length > 0 ? newTypes : undefined })
+                          : [...currentTypes, type];
+                        setFilters({
+                          ...filters,
+                          nodeType: newTypes.length > 0 ? newTypes : undefined,
+                        });
                       }}
                     >
                       {type}
@@ -315,10 +365,12 @@ export function NodeTreeExplorer({ document, onNodeSelect, selectedNodeId }: Nod
           {filteredNodes ? (
             renderNode(filteredNodes)
           ) : (
-            <div className="p-4 text-center text-gray-500">No nodes match the current filters</div>
+            <div className="p-4 text-center text-gray-500">
+              No nodes match the current filters
+            </div>
           )}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -2,20 +2,20 @@
  * Constants and configuration for the CodePreview component
  */
 
-import type { TabConfig, SyntaxTheme } from "@/types/code-preview"
+import type { TabConfig, SyntaxTheme } from "@/types/code-preview";
 
-export const DEFAULT_COMPONENT_NAME = "Component"
+export const DEFAULT_COMPONENT_NAME = "Component";
 
-export const SUCCESS_TIMEOUT = 2000
+export const SUCCESS_TIMEOUT = 2000;
 
-export const ERROR_TIMEOUT = 5000
+export const ERROR_TIMEOUT = 5000;
 
 export const KEYBOARD_SHORTCUTS = {
   COPY: "ctrl+c",
   DOWNLOAD: "ctrl+s",
   NEXT_TAB: "ctrl+right",
   PREV_TAB: "ctrl+left",
-} as const
+} as const;
 
 export const TAB_CONFIGS: TabConfig[] = [
   {
@@ -58,7 +58,7 @@ export const TAB_CONFIGS: TabConfig[] = [
     getContent: (content) => content.html || "",
     isVisible: (content) => !!content.html,
   },
-]
+];
 
 export const SYNTAX_THEMES: Record<SyntaxTheme, any> = {
   light: {
@@ -164,7 +164,7 @@ export const SYNTAX_THEMES: Record<SyntaxTheme, any> = {
       border: "2px solid #ffffff",
     },
   },
-}
+};
 
 export const ERROR_MESSAGES = {
   CLIPBOARD_NOT_SUPPORTED: "Clipboard API is not supported in this browser",
@@ -173,12 +173,12 @@ export const ERROR_MESSAGES = {
   DOWNLOAD_FAILED: "Failed to download file",
   INVALID_CONTENT: "Invalid content provided",
   THEME_DETECTION_FAILED: "Failed to detect system theme",
-} as const
+} as const;
 
 export const SUCCESS_MESSAGES = {
   COPIED_TO_CLIPBOARD: "Copied to clipboard!",
   FILE_DOWNLOADED: "File downloaded successfully!",
-} as const
+} as const;
 
 export const ARIA_LABELS = {
   CODE_PREVIEW: "Code preview with syntax highlighting",
@@ -188,4 +188,4 @@ export const ARIA_LABELS = {
   DOWNLOAD_BUTTON: "Download code file",
   THEME_TOGGLE: "Toggle theme",
   LINE_NUMBERS: "Line numbers",
-} as const
+} as const;

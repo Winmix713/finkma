@@ -1,26 +1,32 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/toast-system"
-import { Upload, File, X, Loader2 } from "lucide-react"
+import { useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/components/ui/toast-system";
+import { Upload, File, X, Loader2 } from "lucide-react";
 
 interface FileUploadFormProps {
-  onSubmit: (files: File[]) => Promise<void>
-  disabled?: boolean
-  acceptedTypes?: string[]
-  maxFiles?: number
-  maxSize?: number // in MB
+  onSubmit: (files: File[]) => Promise<void>;
+  disabled?: boolean;
+  acceptedTypes?: string[];
+  maxFiles?: number;
+  maxSize?: number; // in MB
 }
 
 interface UploadedFile {
-  file: File
-  id: string
-  status: "pending" | "uploading" | "success" | "error"
-  error?: string
+  file: File;
+  id: string;
+  status: "pending" | "uploading" | "success" | "error";
+  error?: string;
 }
 
 export function FileUploadForm({
@@ -30,130 +36,147 @@ export function FileUploadForm({
   maxFiles = 5,
   maxSize = 10,
 }: FileUploadFormProps) {
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
-  const [isDragOver, setIsDragOver] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
-  const { success, error, warning } = useToast()
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const { success, error, warning } = useToast();
 
   const validateFile = (file: File): string | null => {
     // Check file size
     if (file.size > maxSize * 1024 * 1024) {
-      return `File size must be less than ${maxSize}MB`
+      return `File size must be less than ${maxSize}MB`;
     }
 
     // Check file type
-    const extension = "." + file.name.split(".").pop()?.toLowerCase()
+    const extension = "." + file.name.split(".").pop()?.toLowerCase();
     if (!acceptedTypes.includes(extension)) {
-      return `File type not supported. Accepted types: ${acceptedTypes.join(", ")}`
+      return `File type not supported. Accepted types: ${acceptedTypes.join(", ")}`;
     }
 
-    return null
-  }
+    return null;
+  };
 
   const addFiles = useCallback(
     (files: FileList | File[]) => {
-      const fileArray = Array.from(files)
-      const newFiles: UploadedFile[] = []
+      const fileArray = Array.from(files);
+      const newFiles: UploadedFile[] = [];
 
       for (const file of fileArray) {
         // Check if we've reached max files
         if (uploadedFiles.length + newFiles.length >= maxFiles) {
-          warning("Too Many Files", `Maximum ${maxFiles} files allowed`)
-          break
+          warning("Too Many Files", `Maximum ${maxFiles} files allowed`);
+          break;
         }
 
         // Validate file
-        const validationError = validateFile(file)
+        const validationError = validateFile(file);
 
         const uploadedFile: UploadedFile = {
           file,
           id: Math.random().toString(36).substr(2, 9),
           status: validationError ? "error" : "pending",
           error: validationError || undefined,
-        }
+        };
 
-        newFiles.push(uploadedFile)
+        newFiles.push(uploadedFile);
       }
 
-      setUploadedFiles((prev) => [...prev, ...newFiles])
+      setUploadedFiles((prev) => [...prev, ...newFiles]);
 
       if (newFiles.some((f) => f.status === "error")) {
-        error("Some Files Invalid", "Please check the file requirements")
+        error("Some Files Invalid", "Please check the file requirements");
       }
     },
     [uploadedFiles.length, maxFiles, maxSize, acceptedTypes, warning, error],
-  )
+  );
 
   const removeFile = (id: string) => {
-    setUploadedFiles((prev) => prev.filter((f) => f.id !== id))
-  }
+    setUploadedFiles((prev) => prev.filter((f) => f.id !== id));
+  };
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(true)
-  }
+    e.preventDefault();
+    setIsDragOver(true);
+  };
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-  }
+    e.preventDefault();
+    setIsDragOver(false);
+  };
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
+    e.preventDefault();
+    setIsDragOver(false);
 
-    if (disabled) return
+    if (disabled) return;
 
-    const files = e.dataTransfer.files
+    const files = e.dataTransfer.files;
     if (files.length > 0) {
-      addFiles(files)
+      addFiles(files);
     }
-  }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
+    const files = e.target.files;
     if (files && files.length > 0) {
-      addFiles(files)
+      addFiles(files);
     }
     // Reset input
-    e.target.value = ""
-  }
+    e.target.value = "";
+  };
 
   const handleSubmit = async () => {
-    const validFiles = uploadedFiles.filter((f) => f.status === "pending")
+    const validFiles = uploadedFiles.filter((f) => f.status === "pending");
 
     if (validFiles.length === 0) {
-      error("No Valid Files", "Please add valid files to upload")
-      return
+      error("No Valid Files", "Please add valid files to upload");
+      return;
     }
 
-    setIsUploading(true)
+    setIsUploading(true);
 
     // Update status to uploading
-    setUploadedFiles((prev) => prev.map((f) => (f.status === "pending" ? { ...f, status: "uploading" as const } : f)))
+    setUploadedFiles((prev) =>
+      prev.map((f) =>
+        f.status === "pending" ? { ...f, status: "uploading" as const } : f,
+      ),
+    );
 
     try {
-      await onSubmit(validFiles.map((f) => f.file))
+      await onSubmit(validFiles.map((f) => f.file));
 
       // Update status to success
-      setUploadedFiles((prev) => prev.map((f) => (f.status === "uploading" ? { ...f, status: "success" as const } : f)))
+      setUploadedFiles((prev) =>
+        prev.map((f) =>
+          f.status === "uploading" ? { ...f, status: "success" as const } : f,
+        ),
+      );
 
-      success("Files Uploaded", `Successfully uploaded ${validFiles.length} file(s)`)
+      success(
+        "Files Uploaded",
+        `Successfully uploaded ${validFiles.length} file(s)`,
+      );
     } catch (err) {
       // Update status to error
       setUploadedFiles((prev) =>
-        prev.map((f) => (f.status === "uploading" ? { ...f, status: "error" as const, error: "Upload failed" } : f)),
-      )
+        prev.map((f) =>
+          f.status === "uploading"
+            ? { ...f, status: "error" as const, error: "Upload failed" }
+            : f,
+        ),
+      );
 
-      const errorMessage = err instanceof Error ? err.message : "Upload failed"
-      error("Upload Failed", errorMessage)
+      const errorMessage = err instanceof Error ? err.message : "Upload failed";
+      error("Upload Failed", errorMessage);
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
-  const validFiles = uploadedFiles.filter((f) => f.status === "pending" || f.status === "success")
-  const canSubmit = validFiles.length > 0 && !disabled && !isUploading
+  const validFiles = uploadedFiles.filter(
+    (f) => f.status === "pending" || f.status === "success",
+  );
+  const canSubmit = validFiles.length > 0 && !disabled && !isUploading;
 
   return (
     <Card>
@@ -162,7 +185,9 @@ export function FileUploadForm({
           <Upload className="h-5 w-5" />
           File Upload
         </CardTitle>
-        <CardDescription>Upload Figma files or JSON exports for processing</CardDescription>
+        <CardDescription>
+          Upload Figma files or JSON exports for processing
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Drop Zone */}
@@ -178,9 +203,12 @@ export function FileUploadForm({
         >
           <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
           <div className="space-y-2">
-            <p className="text-lg font-medium">Drop files here or click to browse</p>
+            <p className="text-lg font-medium">
+              Drop files here or click to browse
+            </p>
             <p className="text-sm text-gray-600">
-              Supported formats: {acceptedTypes.join(", ")} • Max {maxSize}MB per file
+              Supported formats: {acceptedTypes.join(", ")} • Max {maxSize}MB
+              per file
             </p>
           </div>
 
@@ -220,13 +248,23 @@ export function FileUploadForm({
                   <File className="h-4 w-4 flex-shrink-0" />
 
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{uploadedFile.file.name}</p>
-                    <p className="text-xs text-gray-600">{(uploadedFile.file.size / 1024 / 1024).toFixed(2)} MB</p>
-                    {uploadedFile.error && <p className="text-xs text-red-600 mt-1">{uploadedFile.error}</p>}
+                    <p className="text-sm font-medium truncate">
+                      {uploadedFile.file.name}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {(uploadedFile.file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                    {uploadedFile.error && (
+                      <p className="text-xs text-red-600 mt-1">
+                        {uploadedFile.error}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {uploadedFile.status === "uploading" && <Loader2 className="h-4 w-4 animate-spin text-blue-600" />}
+                    {uploadedFile.status === "uploading" && (
+                      <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                    )}
 
                     <Button
                       variant="ghost"
@@ -268,5 +306,5 @@ export function FileUploadForm({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
