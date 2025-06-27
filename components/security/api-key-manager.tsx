@@ -1,30 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Shield, Key, Trash2, Plus, Eye, EyeOff, Clock, AlertTriangle, CheckCircle } from "lucide-react"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Shield,
+  Key,
+  Trash2,
+  Plus,
+  Eye,
+  EyeOff,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
 
 interface ApiKey {
-  id: string
-  name: string
-  key: string
-  createdAt: Date
-  lastUsed?: Date
-  isActive: boolean
+  id: string;
+  name: string;
+  key: string;
+  createdAt: Date;
+  lastUsed?: Date;
+  isActive: boolean;
 }
 
 interface ApiKeyManagerProps {
-  currentApiKey?: string
-  isConnected: boolean
-  onKeyUpdate: (newKey: string) => void
+  currentApiKey?: string;
+  isConnected: boolean;
+  onKeyUpdate: (newKey: string) => void;
 }
 
-export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKeyManagerProps) {
+export function ApiKeyManager({
+  currentApiKey,
+  isConnected,
+  onKeyUpdate,
+}: ApiKeyManagerProps) {
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([
     {
       id: "1",
@@ -34,32 +48,32 @@ export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKe
       lastUsed: new Date(),
       isActive: true,
     },
-  ])
-  const [newKeyName, setNewKeyName] = useState("")
-  const [newKeyValue, setNewKeyValue] = useState("")
-  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({})
-  const [error, setError] = useState("")
+  ]);
+  const [newKeyName, setNewKeyName] = useState("");
+  const [newKeyValue, setNewKeyValue] = useState("");
+  const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
+  const [error, setError] = useState("");
 
   const maskKey = (key: string) => {
-    if (key.length < 8) return key
-    return `${key.slice(0, 4)}...${key.slice(-4)}`
-  }
+    if (key.length < 8) return key;
+    return `${key.slice(0, 4)}...${key.slice(-4)}`;
+  };
 
   const validateKey = (key: string) => {
-    return key.startsWith("figd_") && key.length > 20
-  }
+    return key.startsWith("figd_") && key.length > 20;
+  };
 
   const addApiKey = () => {
-    setError("")
+    setError("");
 
     if (!newKeyName.trim()) {
-      setError("Key name is required")
-      return
+      setError("Key name is required");
+      return;
     }
 
     if (!validateKey(newKeyValue)) {
-      setError("Invalid Figma API key format")
-      return
+      setError("Invalid Figma API key format");
+      return;
     }
 
     const newKey: ApiKey = {
@@ -68,28 +82,30 @@ export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKe
       key: newKeyValue.trim(),
       createdAt: new Date(),
       isActive: false,
-    }
+    };
 
-    setApiKeys((prev) => [...prev, newKey])
-    setNewKeyName("")
-    setNewKeyValue("")
-  }
+    setApiKeys((prev) => [...prev, newKey]);
+    setNewKeyName("");
+    setNewKeyValue("");
+  };
 
   const removeApiKey = (keyId: string) => {
-    setApiKeys((prev) => prev.filter((key) => key.id !== keyId))
-  }
+    setApiKeys((prev) => prev.filter((key) => key.id !== keyId));
+  };
 
   const activateKey = (keyId: string) => {
-    const key = apiKeys.find((k) => k.id === keyId)
+    const key = apiKeys.find((k) => k.id === keyId);
     if (key) {
-      setApiKeys((prev) => prev.map((k) => ({ ...k, isActive: k.id === keyId })))
-      onKeyUpdate(key.key)
+      setApiKeys((prev) =>
+        prev.map((k) => ({ ...k, isActive: k.id === keyId })),
+      );
+      onKeyUpdate(key.key);
     }
-  }
+  };
 
   const toggleKeyVisibility = (keyId: string) => {
-    setShowKeys((prev) => ({ ...prev, [keyId]: !prev[keyId] }))
-  }
+    setShowKeys((prev) => ({ ...prev, [keyId]: !prev[keyId] }));
+  };
 
   return (
     <div className="space-y-6">
@@ -111,7 +127,9 @@ export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKe
               )}
               <div>
                 <div className="font-medium">Connection</div>
-                <div className="text-sm text-gray-600">{isConnected ? "Secure" : "Disconnected"}</div>
+                <div className="text-sm text-gray-600">
+                  {isConnected ? "Secure" : "Disconnected"}
+                </div>
               </div>
             </div>
 
@@ -119,7 +137,9 @@ export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKe
               <Key className="w-5 h-5 text-blue-600" />
               <div>
                 <div className="font-medium">API Keys</div>
-                <div className="text-sm text-gray-600">{apiKeys.length} configured</div>
+                <div className="text-sm text-gray-600">
+                  {apiKeys.length} configured
+                </div>
               </div>
             </div>
 
@@ -128,7 +148,9 @@ export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKe
               <div>
                 <div className="font-medium">Last Activity</div>
                 <div className="text-sm text-gray-600">
-                  {apiKeys.find((k) => k.isActive)?.lastUsed?.toLocaleTimeString() || "Never"}
+                  {apiKeys
+                    .find((k) => k.isActive)
+                    ?.lastUsed?.toLocaleTimeString() || "Never"}
                 </div>
               </div>
             </div>
@@ -193,36 +215,54 @@ export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKe
               <div
                 key={apiKey.id}
                 className={`p-4 border rounded-lg ${
-                  apiKey.isActive ? "border-green-500 bg-green-50" : "border-gray-200"
+                  apiKey.isActive
+                    ? "border-green-500 bg-green-50"
+                    : "border-gray-200"
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-2">
                       <h4 className="font-medium">{apiKey.name}</h4>
-                      {apiKey.isActive && <Badge variant="default">Active</Badge>}
+                      {apiKey.isActive && (
+                        <Badge variant="default">Active</Badge>
+                      )}
                     </div>
 
                     <div className="flex items-center space-x-2 mt-1">
                       <code className="text-sm bg-gray-100 px-2 py-1 rounded">
                         {showKeys[apiKey.id] ? apiKey.key : maskKey(apiKey.key)}
                       </code>
-                      <Button variant="ghost" size="sm" onClick={() => toggleKeyVisibility(apiKey.id)}>
-                        {showKeys[apiKey.id] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleKeyVisibility(apiKey.id)}
+                      >
+                        {showKeys[apiKey.id] ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
                       </Button>
                     </div>
 
                     <div className="text-sm text-gray-600 mt-2">
                       Created: {apiKey.createdAt.toLocaleDateString()}
                       {apiKey.lastUsed && (
-                        <span className="ml-4">Last used: {apiKey.lastUsed.toLocaleDateString()}</span>
+                        <span className="ml-4">
+                          Last used: {apiKey.lastUsed.toLocaleDateString()}
+                        </span>
                       )}
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-2">
                     {!apiKey.isActive && (
-                      <Button variant="outline" size="sm" onClick={() => activateKey(apiKey.id)}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => activateKey(apiKey.id)}
+                      >
                         <Key className="w-4 h-4 mr-1" />
                         Activate
                       </Button>
@@ -279,5 +319,5 @@ export function ApiKeyManager({ currentApiKey, isConnected, onKeyUpdate }: ApiKe
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

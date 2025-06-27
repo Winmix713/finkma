@@ -1,50 +1,62 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, X, Save, History } from "lucide-react"
+import { useState, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Search, Filter, X, Save, History } from "lucide-react";
 
 interface AdvancedSearchProps {
-  onSearch?: (query: SearchQuery) => void
-  onSaveSearch?: (query: SearchQuery, name: string) => void
-  savedSearches?: SavedSearch[]
-  searchResults?: SearchResult[]
+  onSearch?: (query: SearchQuery) => void;
+  onSaveSearch?: (query: SearchQuery, name: string) => void;
+  savedSearches?: SavedSearch[];
+  searchResults?: SearchResult[];
 }
 
 interface SearchQuery {
-  text: string
+  text: string;
   filters: {
-    nodeTypes: string[]
-    properties: Record<string, any>
-    hasChildren: boolean | null
-    isVisible: boolean | null
-    isLocked: boolean | null
-    hasComponent: boolean | null
-    hasStyle: boolean | null
-  }
+    nodeTypes: string[];
+    properties: Record<string, any>;
+    hasChildren: boolean | null;
+    isVisible: boolean | null;
+    isLocked: boolean | null;
+    hasComponent: boolean | null;
+    hasStyle: boolean | null;
+  };
   sorting: {
-    field: "name" | "type" | "depth" | "children"
-    order: "asc" | "desc"
-  }
+    field: "name" | "type" | "depth" | "children";
+    order: "asc" | "desc";
+  };
 }
 
 interface SavedSearch {
-  id: string
-  name: string
-  query: SearchQuery
-  timestamp: Date
+  id: string;
+  name: string;
+  query: SearchQuery;
+  timestamp: Date;
 }
 
 interface SearchResult {
-  id: string
-  name: string
-  type: string
-  path: string[]
-  matches: string[]
+  id: string;
+  name: string;
+  type: string;
+  path: string[];
+  matches: string[];
 }
 
 export function AdvancedSearch({
@@ -68,11 +80,11 @@ export function AdvancedSearch({
       field: "name",
       order: "asc",
     },
-  })
+  });
 
-  const [showFilters, setShowFilters] = useState(false)
-  const [saveSearchName, setSaveSearchName] = useState("")
-  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [showFilters, setShowFilters] = useState(false);
+  const [saveSearchName, setSaveSearchName] = useState("");
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
 
   const nodeTypes = [
     "FRAME",
@@ -87,24 +99,24 @@ export function AdvancedSearch({
     "LINE",
     "STAR",
     "POLYGON",
-  ]
+  ];
 
   const handleSearch = () => {
-    onSearch?.(searchQuery)
-  }
+    onSearch?.(searchQuery);
+  };
 
   const handleSaveSearch = () => {
     if (saveSearchName.trim()) {
-      onSaveSearch?.(searchQuery, saveSearchName.trim())
-      setSaveSearchName("")
-      setShowSaveDialog(false)
+      onSaveSearch?.(searchQuery, saveSearchName.trim());
+      setSaveSearchName("");
+      setShowSaveDialog(false);
     }
-  }
+  };
 
   const loadSavedSearch = (savedSearch: SavedSearch) => {
-    setSearchQuery(savedSearch.query)
-    onSearch?.(savedSearch.query)
-  }
+    setSearchQuery(savedSearch.query);
+    onSearch?.(savedSearch.query);
+  };
 
   const updateFilter = (key: string, value: any) => {
     setSearchQuery((prev) => ({
@@ -113,8 +125,8 @@ export function AdvancedSearch({
         ...prev.filters,
         [key]: value,
       },
-    }))
-  }
+    }));
+  };
 
   const toggleNodeType = (nodeType: string) => {
     setSearchQuery((prev) => ({
@@ -125,8 +137,8 @@ export function AdvancedSearch({
           ? prev.filters.nodeTypes.filter((t) => t !== nodeType)
           : [...prev.filters.nodeTypes, nodeType],
       },
-    }))
-  }
+    }));
+  };
 
   const clearFilters = () => {
     setSearchQuery((prev) => ({
@@ -140,22 +152,22 @@ export function AdvancedSearch({
         hasComponent: null,
         hasStyle: null,
       },
-    }))
-  }
+    }));
+  };
 
   const activeFiltersCount = useMemo(() => {
-    const filters = searchQuery.filters
-    let count = 0
+    const filters = searchQuery.filters;
+    let count = 0;
 
-    if (filters.nodeTypes.length > 0) count++
-    if (filters.hasChildren !== null) count++
-    if (filters.isVisible !== null) count++
-    if (filters.isLocked !== null) count++
-    if (filters.hasComponent !== null) count++
-    if (filters.hasStyle !== null) count++
+    if (filters.nodeTypes.length > 0) count++;
+    if (filters.hasChildren !== null) count++;
+    if (filters.isVisible !== null) count++;
+    if (filters.isLocked !== null) count++;
+    if (filters.hasComponent !== null) count++;
+    if (filters.hasStyle !== null) count++;
 
-    return count
-  }, [searchQuery.filters])
+    return count;
+  }, [searchQuery.filters]);
 
   return (
     <div className="space-y-6">
@@ -166,7 +178,9 @@ export function AdvancedSearch({
             <Search className="h-5 w-5" />
             Advanced Search
           </CardTitle>
-          <CardDescription>Search through your Figma file with advanced filters and options</CardDescription>
+          <CardDescription>
+            Search through your Figma file with advanced filters and options
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Main Search */}
@@ -176,12 +190,17 @@ export function AdvancedSearch({
               <Input
                 placeholder="Search nodes, components, text content..."
                 value={searchQuery.text}
-                onChange={(e) => setSearchQuery((prev) => ({ ...prev, text: e.target.value }))}
+                onChange={(e) =>
+                  setSearchQuery((prev) => ({ ...prev, text: e.target.value }))
+                }
                 className="pl-10"
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
             </div>
-            <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <Filter className="h-4 w-4 mr-2" />
               Filters
               {activeFiltersCount > 0 && (
@@ -203,7 +222,11 @@ export function AdvancedSearch({
                   {nodeTypes.map((type) => (
                     <Button
                       key={type}
-                      variant={searchQuery.filters.nodeTypes.includes(type) ? "default" : "outline"}
+                      variant={
+                        searchQuery.filters.nodeTypes.includes(type)
+                          ? "default"
+                          : "outline"
+                      }
                       size="sm"
                       onClick={() => toggleNodeType(type)}
                     >
@@ -219,7 +242,12 @@ export function AdvancedSearch({
                   <label className="text-sm font-medium">Has Children</label>
                   <Select
                     value={searchQuery.filters.hasChildren?.toString() || "any"}
-                    onValueChange={(value) => updateFilter("hasChildren", value === "any" ? null : value === "true")}
+                    onValueChange={(value) =>
+                      updateFilter(
+                        "hasChildren",
+                        value === "any" ? null : value === "true",
+                      )
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -236,7 +264,12 @@ export function AdvancedSearch({
                   <label className="text-sm font-medium">Visibility</label>
                   <Select
                     value={searchQuery.filters.isVisible?.toString() || "any"}
-                    onValueChange={(value) => updateFilter("isVisible", value === "any" ? null : value === "true")}
+                    onValueChange={(value) =>
+                      updateFilter(
+                        "isVisible",
+                        value === "any" ? null : value === "true",
+                      )
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -253,7 +286,12 @@ export function AdvancedSearch({
                   <label className="text-sm font-medium">Lock Status</label>
                   <Select
                     value={searchQuery.filters.isLocked?.toString() || "any"}
-                    onValueChange={(value) => updateFilter("isLocked", value === "any" ? null : value === "true")}
+                    onValueChange={(value) =>
+                      updateFilter(
+                        "isLocked",
+                        value === "any" ? null : value === "true",
+                      )
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -320,7 +358,11 @@ export function AdvancedSearch({
                   <X className="h-3 w-3 mr-1" />
                   Clear Filters
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setShowSaveDialog(true)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowSaveDialog(true)}
+                >
                   <Save className="h-3 w-3 mr-1" />
                   Save Search
                 </Button>
@@ -339,10 +381,16 @@ export function AdvancedSearch({
                   onChange={(e) => setSaveSearchName(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveSearch()}
                 />
-                <Button onClick={handleSaveSearch} disabled={!saveSearchName.trim()}>
+                <Button
+                  onClick={handleSaveSearch}
+                  disabled={!saveSearchName.trim()}
+                >
                   Save
                 </Button>
-                <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowSaveDialog(false)}
+                >
                   Cancel
                 </Button>
               </div>
@@ -359,7 +407,9 @@ export function AdvancedSearch({
               <History className="h-5 w-5" />
               Saved Searches
             </CardTitle>
-            <CardDescription>Quick access to your frequently used searches</CardDescription>
+            <CardDescription>
+              Quick access to your frequently used searches
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -371,7 +421,9 @@ export function AdvancedSearch({
                 >
                   <div className="space-y-1">
                     <p className="text-sm font-medium">{savedSearch.name}</p>
-                    <p className="text-xs text-muted-foreground">{savedSearch.timestamp.toLocaleDateString()}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {savedSearch.timestamp.toLocaleDateString()}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
                     {savedSearch.query.filters.nodeTypes.length > 0 && (
@@ -395,25 +447,38 @@ export function AdvancedSearch({
         <Card>
           <CardHeader>
             <CardTitle>Search Results</CardTitle>
-            <CardDescription>{searchResults.length} results found</CardDescription>
+            <CardDescription>
+              {searchResults.length} results found
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               {searchResults.map((result) => (
-                <div key={result.id} className="p-3 rounded-md border hover:bg-muted/50">
+                <div
+                  key={result.id}
+                  className="p-3 rounded-md border hover:bg-muted/50"
+                >
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{result.name}</span>
+                        <span className="font-medium text-sm">
+                          {result.name}
+                        </span>
                         <Badge variant="outline" className="text-xs">
                           {result.type}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground">{result.path.join(" > ")}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {result.path.join(" > ")}
+                      </p>
                       {result.matches.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-2">
                           {result.matches.map((match, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="text-xs"
+                            >
                               {match}
                             </Badge>
                           ))}
@@ -428,5 +493,5 @@ export function AdvancedSearch({
         </Card>
       )}
     </div>
-  )
+  );
 }

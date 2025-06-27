@@ -1,38 +1,38 @@
-"use client"
+"use client";
 
 /**
  * Tab action buttons component (copy/download)
  */
 
-import type React from "react"
-import { memo, useCallback } from "react"
-import { Button } from "@/components/ui/button"
-import { Copy, Download, Check, Loader2 } from "lucide-react"
-import { ARIA_LABELS } from "@/constants/code-preview"
+import type React from "react";
+import { memo, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Copy, Download, Check, Loader2 } from "lucide-react";
+import { ARIA_LABELS } from "@/constants/code-preview";
 
 interface TabActionsProps {
   /** Current tab ID */
-  tabId: string
+  tabId: string;
   /** Tab content */
-  content: string
+  content: string;
   /** Filename for download */
-  filename: string
+  filename: string;
   /** Whether copy is in progress */
-  isCopying?: boolean
+  isCopying?: boolean;
   /** Whether download is in progress */
-  isDownloading?: boolean
+  isDownloading?: boolean;
   /** Whether copy was successful for this tab */
-  copySuccess?: boolean
+  copySuccess?: boolean;
   /** Whether download was successful */
-  downloadSuccess?: boolean
+  downloadSuccess?: boolean;
   /** Copy handler */
-  onCopy: (content: string, tabId: string) => void
+  onCopy: (content: string, tabId: string) => void;
   /** Download handler */
-  onDownload: (content: string, filename: string) => void
+  onDownload: (content: string, filename: string) => void;
   /** Whether actions are disabled */
-  disabled?: boolean
+  disabled?: boolean;
   /** Custom CSS classes */
-  className?: string
+  className?: string;
 }
 
 const TabActionsComponent = memo<TabActionsProps>(
@@ -51,25 +51,28 @@ const TabActionsComponent = memo<TabActionsProps>(
   }) => {
     const handleCopy = useCallback(() => {
       if (!disabled && content.trim()) {
-        onCopy(content, tabId)
+        onCopy(content, tabId);
       }
-    }, [disabled, content, onCopy, tabId])
+    }, [disabled, content, onCopy, tabId]);
 
     const handleDownload = useCallback(() => {
       if (!disabled && content.trim()) {
-        onDownload(content, filename)
+        onDownload(content, filename);
       }
-    }, [disabled, content, onDownload, filename])
+    }, [disabled, content, onDownload, filename]);
 
-    const handleKeyDown = useCallback((event: React.KeyboardEvent, action: () => void) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault()
-        action()
-      }
-    }, [])
+    const handleKeyDown = useCallback(
+      (event: React.KeyboardEvent, action: () => void) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          action();
+        }
+      },
+      [],
+    );
 
-    const isEmpty = !content.trim()
-    const isDisabled = disabled || isEmpty
+    const isEmpty = !content.trim();
+    const isDisabled = disabled || isEmpty;
 
     return (
       <div className={`flex items-center space-x-2 ${className}`}>
@@ -108,7 +111,9 @@ const TabActionsComponent = memo<TabActionsProps>(
           onKeyDown={(e) => handleKeyDown(e, handleDownload)}
           disabled={isDisabled || isDownloading}
           aria-label={`${ARIA_LABELS.DOWNLOAD_BUTTON} ${filename}`}
-          aria-describedby={downloadSuccess ? `download-success-${tabId}` : undefined}
+          aria-describedby={
+            downloadSuccess ? `download-success-${tabId}` : undefined
+          }
           className="min-w-[90px]"
         >
           {isDownloading ? (
@@ -131,21 +136,31 @@ const TabActionsComponent = memo<TabActionsProps>(
 
         {/* Screen reader announcements */}
         {copySuccess && (
-          <div id={`copy-success-${tabId}`} role="status" aria-live="polite" className="sr-only">
+          <div
+            id={`copy-success-${tabId}`}
+            role="status"
+            aria-live="polite"
+            className="sr-only"
+          >
             Code copied to clipboard
           </div>
         )}
 
         {downloadSuccess && (
-          <div id={`download-success-${tabId}`} role="status" aria-live="polite" className="sr-only">
+          <div
+            id={`download-success-${tabId}`}
+            role="status"
+            aria-live="polite"
+            className="sr-only"
+          >
             File downloaded successfully
           </div>
         )}
       </div>
-    )
+    );
   },
-)
+);
 
-TabActionsComponent.displayName = "TabActions"
+TabActionsComponent.displayName = "TabActions";
 
-export { TabActionsComponent as TabActions }
+export { TabActionsComponent as TabActions };

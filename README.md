@@ -20,9 +20,13 @@ A comprehensive, production-ready React component for displaying syntax-highligh
 
 \`\`\`bash
 npm install @your-org/code-preview
+
 # or
+
 yarn add @your-org/code-preview
+
 # or
+
 pnpm add @your-org/code-preview
 \`\`\`
 
@@ -32,10 +36,10 @@ The component requires the following peer dependencies:
 
 \`\`\`json
 {
-  "react": "^18.0.0",
-  "react-dom": "^18.0.0",
-  "react-syntax-highlighter": "^15.5.0",
-  "lucide-react": "^0.263.0"
+"react": "^18.0.0",
+"react-dom": "^18.0.0",
+"react-syntax-highlighter": "^15.5.0",
+"lucide-react": "^0.263.0"
 }
 \`\`\`
 
@@ -45,40 +49,40 @@ The component requires the following peer dependencies:
 import { CodePreview } from '@your-org/code-preview'
 
 function App() {
-  const codeContent = {
-    jsx: `export function Button({ children, onClick }) {
+const codeContent = {
+jsx: `export function Button({ children, onClick }) {
   return (
     <button onClick={onClick} className="btn">
       {children}
     </button>
   )
 }`,
-    css: `.btn {
-  padding: 8px 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: white;
-  cursor: pointer;
+css: `.btn {
+padding: 8px 16px;
+border: 1px solid #ccc;
+border-radius: 4px;
+background: white;
+cursor: pointer;
 }
 
 .btn:hover {
-  background: #f0f0f0;
+background: #f0f0f0;
 }`,
     typescript: `interface ButtonProps {
-  children: React.ReactNode
-  onClick?: () => void
-  disabled?: boolean
+children: React.ReactNode
+onClick?: () => void
+disabled?: boolean
 }`
-  }
+}
 
-  return (
-    <CodePreview
+return (
+<CodePreview
       content={codeContent}
       componentName="Button"
       showLineNumbers={true}
       theme="auto"
     />
-  )
+)
 }
 \`\`\`
 
@@ -90,27 +94,27 @@ function App() {
 import { CodePreview } from '@your-org/code-preview'
 
 function AdvancedExample() {
-  const handleTabChange = (tabId: string) => {
-    console.log('Active tab changed to:', tabId)
-  }
+const handleTabChange = (tabId: string) => {
+console.log('Active tab changed to:', tabId)
+}
 
-  const handleCopy = (content: string, tabId: string) => {
-    console.log(`Copied ${tabId}:`, content)
-    // Track analytics, show notifications, etc.
-  }
+const handleCopy = (content: string, tabId: string) => {
+console.log(`Copied ${tabId}:`, content)
+// Track analytics, show notifications, etc.
+}
 
-  const handleDownload = (filename: string, content: string) => {
-    console.log(`Downloaded ${filename}`)
-    // Track analytics, log downloads, etc.
-  }
+const handleDownload = (filename: string, content: string) => {
+console.log(`Downloaded ${filename}`)
+// Track analytics, log downloads, etc.
+}
 
-  const handleError = (error: Error) => {
-    console.error('CodePreview error:', error)
-    // Send to error reporting service
-  }
+const handleError = (error: Error) => {
+console.error('CodePreview error:', error)
+// Send to error reporting service
+}
 
-  return (
-    <CodePreview
+return (
+<CodePreview
       content={codeContent}
       componentName="AdvancedButton"
       defaultTab="tsx"
@@ -122,7 +126,7 @@ function AdvancedExample() {
       onError={handleError}
       className="my-custom-class"
     />
-  )
+)
 }
 \`\`\`
 
@@ -132,9 +136,10 @@ function AdvancedExample() {
 import { CodePreview } from '@your-org/code-preview'
 
 function StyledExample() {
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      <CodePreview
+return (
+
+<div className="max-w-4xl mx-auto p-6">
+<CodePreview
         content={codeContent}
         componentName="StyledButton"
         maxHeight="400px"
@@ -142,8 +147,8 @@ function StyledExample() {
         theme="light"
         showLineNumbers={false}
       />
-    </div>
-  )
+</div>
+)
 }
 \`\`\`
 
@@ -151,19 +156,19 @@ function StyledExample() {
 
 ### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `content` | `CodeContent` | **Required** | Code content to display |
-| `componentName` | `string` | `"Component"` | Component name for file naming |
-| `defaultTab` | `string` | Auto-detected | Default active tab |
-| `theme` | `'light' \| 'dark' \| 'auto'` | `'auto'` | Theme preference |
-| `showLineNumbers` | `boolean` | `true` | Whether to show line numbers |
-| `maxHeight` | `string` | `'400px'` | Maximum height for code display |
-| `className` | `string` | `''` | Custom CSS classes |
-| `onTabChange` | `(tabId: string) => void` | `undefined` | Tab change callback |
-| `onCopy` | `(content: string, tabId: string) => void` | `undefined` | Copy callback |
-| `onDownload` | `(filename: string, content: string) => void` | `undefined` | Download callback |
-| `onError` | `(error: Error) => void` | `undefined` | Error callback |
+| Prop              | Type                                          | Default       | Description                     |
+| ----------------- | --------------------------------------------- | ------------- | ------------------------------- |
+| `content`         | `CodeContent`                                 | **Required**  | Code content to display         |
+| `componentName`   | `string`                                      | `"Component"` | Component name for file naming  |
+| `defaultTab`      | `string`                                      | Auto-detected | Default active tab              |
+| `theme`           | `'light' \| 'dark' \| 'auto'`                 | `'auto'`      | Theme preference                |
+| `showLineNumbers` | `boolean`                                     | `true`        | Whether to show line numbers    |
+| `maxHeight`       | `string`                                      | `'400px'`     | Maximum height for code display |
+| `className`       | `string`                                      | `''`          | Custom CSS classes              |
+| `onTabChange`     | `(tabId: string) => void`                     | `undefined`   | Tab change callback             |
+| `onCopy`          | `(content: string, tabId: string) => void`    | `undefined`   | Copy callback                   |
+| `onDownload`      | `(filename: string, content: string) => void` | `undefined`   | Download callback               |
+| `onError`         | `(error: Error) => void`                      | `undefined`   | Error callback                  |
 
 ### Types
 
@@ -171,10 +176,10 @@ function StyledExample() {
 
 \`\`\`tsx
 interface CodeContent {
-  jsx?: string      // JSX/React code
-  css?: string      // CSS styles
-  typescript?: string // TypeScript definitions
-  html?: string     // HTML content
+jsx?: string // JSX/React code
+css?: string // CSS styles
+typescript?: string // TypeScript definitions
+html?: string // HTML content
 }
 \`\`\`
 
@@ -182,8 +187,8 @@ interface CodeContent {
 
 \`\`\`tsx
 interface CodePreviewError extends Error {
-  type: 'clipboard' | 'download' | 'syntax' | 'theme' | 'unknown'
-  context?: Record<string, any>
+type: 'clipboard' | 'download' | 'syntax' | 'theme' | 'unknown'
+context?: Record<string, any>
 }
 \`\`\`
 
@@ -199,12 +204,12 @@ The component follows WCAG 2.1 AA guidelines and includes:
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+C` / `Cmd+C` | Copy current tab content |
-| `Ctrl+S` / `Cmd+S` | Download current tab as file |
-| `Tab` | Navigate between interactive elements |
-| `Enter` / `Space` | Activate buttons and tabs |
+| Shortcut           | Action                                |
+| ------------------ | ------------------------------------- |
+| `Ctrl+C` / `Cmd+C` | Copy current tab content              |
+| `Ctrl+S` / `Cmd+S` | Download current tab as file          |
+| `Tab`              | Navigate between interactive elements |
+| `Enter` / `Space`  | Activate buttons and tabs             |
 
 ## Performance
 
@@ -251,19 +256,19 @@ You can customize the appearance using CSS custom properties:
 
 \`\`\`css
 .code-preview {
-  --code-bg: #f8f9fa;
-  --code-text: #24292e;
-  --tab-bg: #ffffff;
-  --tab-active: #0366d6;
-  --border-color: #e1e4e8;
+--code-bg: #f8f9fa;
+--code-text: #24292e;
+--tab-bg: #ffffff;
+--tab-active: #0366d6;
+--border-color: #e1e4e8;
 }
 
 .code-preview[data-theme="dark"] {
-  --code-bg: #2d3748;
-  --code-text: #f7fafc;
-  --tab-bg: #1a202c;
-  --tab-active: #4299e1;
-  --border-color: #4a5568;
+--code-bg: #2d3748;
+--code-text: #f7fafc;
+--tab-bg: #1a202c;
+--tab-active: #4299e1;
+--border-color: #4a5568;
 }
 \`\`\`
 
@@ -280,16 +285,21 @@ The component includes comprehensive tests:
 ### Running Tests
 
 \`\`\`bash
+
 # Run all tests
+
 npm test
 
 # Run tests in watch mode
+
 npm test -- --watch
 
 # Run tests with coverage
+
 npm test -- --coverage
 
 # Run accessibility tests
+
 npm run test:a11y
 \`\`\`
 
@@ -300,19 +310,25 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ### Development Setup
 
 \`\`\`bash
+
 # Clone the repository
+
 git clone https://github.com/your-org/code-preview.git
 
 # Install dependencies
+
 npm install
 
 # Start development server
+
 npm run dev
 
 # Run tests
+
 npm test
 
 # Build for production
+
 npm run build
 \`\`\`
 
@@ -323,6 +339,45 @@ npm run build
 - **Prettier**: Consistent code formatting
 - **Jest**: Testing framework with React Testing Library
 - **Accessibility**: WCAG 2.1 AA compliance required
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions to ensure code quality and automated deployments.
+
+### Workflow Configuration
+
+The workflow is defined in `.github/workflows/ci-cd.yaml` and includes the following jobs:
+
+- `ci`: Installs dependencies, lints code, runs tests, and builds the application.
+- `deploy-preview`: Builds and deploys pull request previews to Vercel.
+- `deploy-production`: Deploys the `main` branch to Vercel production, runs a smoke test, and notifies Slack.
+
+### Environment Variables & Secrets
+
+Configure the following secrets in your GitHub repository settings:
+
+- `VERCEL_TOKEN`: Vercel authentication token.
+- `VERCEL_ORG_ID`: Vercel organization ID.
+- `VERCEL_PROJECT_ID`: Vercel project ID.
+- `PRODUCTION_URL`: URL of the production deployment (used for smoke tests).
+- `SLACK_WEBHOOK_URL`: Slack webhook URL for deployment notifications.
+
+### Triggering Builds
+
+Builds run automatically on pushes to feature branches and pull requests.
+
+To manually re-run a workflow:
+
+- Go to the GitHub Actions tab.
+- Select the workflow.
+- Click "Run workflow".
+
+### Rollback Deployments
+
+To rollback a production deployment:
+
+- Revert the commit that triggered the deployment and push to `main`.
+- Or use the Vercel dashboard to promote a previous deployment.
 
 ## Changelog
 

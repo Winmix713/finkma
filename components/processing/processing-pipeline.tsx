@@ -1,90 +1,134 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { CheckCircle, Clock, AlertCircle, Play, Pause, RotateCcw, Settings } from "lucide-react"
-import type { ProcessingStatus } from "../../types/figma-info-display"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Play,
+  Pause,
+  RotateCcw,
+  Settings,
+} from "lucide-react";
+import type { ProcessingStatus } from "../../types/figma-info-display";
 
 interface ProcessingPipelineProps {
-  status: ProcessingStatus
-  onPause?: () => void
-  onResume?: () => void
-  onRestart?: () => void
-  onConfigure?: () => void
+  status: ProcessingStatus;
+  onPause?: () => void;
+  onResume?: () => void;
+  onRestart?: () => void;
+  onConfigure?: () => void;
 }
 
-export function ProcessingPipeline({ status, onPause, onResume, onRestart, onConfigure }: ProcessingPipelineProps) {
-  const [elapsedTime, setElapsedTime] = useState(0)
+export function ProcessingPipeline({
+  status,
+  onPause,
+  onResume,
+  onRestart,
+  onConfigure,
+}: ProcessingPipelineProps) {
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setElapsedTime(Date.now() - status.startTime.getTime())
-    }, 1000)
+      setElapsedTime(Date.now() - status.startTime.getTime());
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [status.startTime])
+    return () => clearInterval(interval);
+  }, [status.startTime]);
 
   const formatTime = (ms: number) => {
-    const seconds = Math.floor(ms / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const hours = Math.floor(minutes / 60)
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
 
     if (hours > 0) {
-      return `${hours}h ${minutes % 60}m ${seconds % 60}s`
+      return `${hours}h ${minutes % 60}m ${seconds % 60}s`;
     } else if (minutes > 0) {
-      return `${minutes}m ${seconds % 60}s`
+      return `${minutes}m ${seconds % 60}s`;
     } else {
-      return `${seconds}s`
+      return `${seconds}s`;
     }
-  }
+  };
 
   const getEstimatedCompletion = () => {
-    if (!status.estimatedCompletion) return "Unknown"
-    const remaining = status.estimatedCompletion.getTime() - Date.now()
-    if (remaining <= 0) return "Completing..."
-    return formatTime(remaining)
-  }
+    if (!status.estimatedCompletion) return "Unknown";
+    const remaining = status.estimatedCompletion.getTime() - Date.now();
+    if (remaining <= 0) return "Completing...";
+    return formatTime(remaining);
+  };
 
   const getStageIcon = (stage: string) => {
     switch (stage.toLowerCase()) {
       case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-600" />
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
       case "error":
-        return <AlertCircle className="h-4 w-4 text-red-600" />
+        return <AlertCircle className="h-4 w-4 text-red-600" />;
       default:
-        return <Clock className="h-4 w-4 text-blue-600" />
+        return <Clock className="h-4 w-4 text-blue-600" />;
     }
-  }
+  };
 
   const getStageColor = (stage: string) => {
     switch (stage.toLowerCase()) {
       case "completed":
-        return "bg-green-100 text-green-800 border-green-200"
+        return "bg-green-100 text-green-800 border-green-200";
       case "error":
-        return "bg-red-100 text-red-800 border-red-200"
+        return "bg-red-100 text-red-800 border-red-200";
       case "paused":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       default:
-        return "bg-blue-100 text-blue-800 border-blue-200"
+        return "bg-blue-100 text-blue-800 border-blue-200";
     }
-  }
+  };
 
   const processingStages = [
-    { id: "fetch", name: "Fetching File", description: "Downloading Figma file data" },
-    { id: "parse", name: "Parsing Structure", description: "Analyzing node hierarchy" },
-    { id: "analyze", name: "Quality Analysis", description: "Running quality checks" },
-    { id: "accessibility", name: "Accessibility Audit", description: "Checking WCAG compliance" },
-    { id: "performance", name: "Performance Analysis", description: "Evaluating optimization opportunities" },
-    { id: "generate", name: "Code Generation", description: "Creating output code" },
+    {
+      id: "fetch",
+      name: "Fetching File",
+      description: "Downloading Figma file data",
+    },
+    {
+      id: "parse",
+      name: "Parsing Structure",
+      description: "Analyzing node hierarchy",
+    },
+    {
+      id: "analyze",
+      name: "Quality Analysis",
+      description: "Running quality checks",
+    },
+    {
+      id: "accessibility",
+      name: "Accessibility Audit",
+      description: "Checking WCAG compliance",
+    },
+    {
+      id: "performance",
+      name: "Performance Analysis",
+      description: "Evaluating optimization opportunities",
+    },
+    {
+      id: "generate",
+      name: "Code Generation",
+      description: "Creating output code",
+    },
     { id: "finalize", name: "Finalizing", description: "Preparing results" },
-  ]
+  ];
 
   const currentStageIndex = processingStages.findIndex((stage) =>
     stage.name.toLowerCase().includes(status.stage.toLowerCase()),
-  )
+  );
 
   return (
     <Card>
@@ -117,7 +161,9 @@ export function ProcessingPipeline({ status, onPause, onResume, onRestart, onCon
             )}
           </div>
         </CardTitle>
-        <CardDescription>Real-time processing status and pipeline visualization</CardDescription>
+        <CardDescription>
+          Real-time processing status and pipeline visualization
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Current Status */}
@@ -125,14 +171,20 @@ export function ProcessingPipeline({ status, onPause, onResume, onRestart, onCon
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Badge className={getStageColor(status.stage)}>{status.stage}</Badge>
+                <Badge className={getStageColor(status.stage)}>
+                  {status.stage}
+                </Badge>
                 <span className="text-sm font-medium">{status.message}</span>
               </div>
-              <p className="text-xs text-muted-foreground">Processing ID: {status.id}</p>
+              <p className="text-xs text-muted-foreground">
+                Processing ID: {status.id}
+              </p>
             </div>
             <div className="text-right space-y-1">
               <p className="text-sm font-medium">{status.progress}%</p>
-              <p className="text-xs text-muted-foreground">Elapsed: {formatTime(elapsedTime)}</p>
+              <p className="text-xs text-muted-foreground">
+                Elapsed: {formatTime(elapsedTime)}
+              </p>
             </div>
           </div>
 
@@ -149,9 +201,9 @@ export function ProcessingPipeline({ status, onPause, onResume, onRestart, onCon
           <h4 className="text-sm font-medium">Pipeline Stages</h4>
           <div className="space-y-2">
             {processingStages.map((stage, index) => {
-              const isCompleted = index < currentStageIndex
-              const isCurrent = index === currentStageIndex
-              const isPending = index > currentStageIndex
+              const isCompleted = index < currentStageIndex;
+              const isCurrent = index === currentStageIndex;
+              const isPending = index > currentStageIndex;
 
               return (
                 <div
@@ -190,12 +242,15 @@ export function ProcessingPipeline({ status, onPause, onResume, onRestart, onCon
                     </Badge>
                   )}
                   {isCompleted && (
-                    <Badge variant="outline" className="text-xs text-green-700 border-green-300">
+                    <Badge
+                      variant="outline"
+                      className="text-xs text-green-700 border-green-300"
+                    >
                       Complete
                     </Badge>
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         </div>
@@ -208,7 +263,10 @@ export function ProcessingPipeline({ status, onPause, onResume, onRestart, onCon
                 <h4 className="text-sm font-medium text-red-700">Errors</h4>
                 <div className="space-y-1">
                   {status.errors.map((error, index) => (
-                    <div key={index} className="flex items-start gap-2 p-2 bg-red-50 rounded-md">
+                    <div
+                      key={index}
+                      className="flex items-start gap-2 p-2 bg-red-50 rounded-md"
+                    >
                       <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-red-800">{error}</p>
                     </div>
@@ -219,10 +277,15 @@ export function ProcessingPipeline({ status, onPause, onResume, onRestart, onCon
 
             {status.warnings.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-yellow-700">Warnings</h4>
+                <h4 className="text-sm font-medium text-yellow-700">
+                  Warnings
+                </h4>
                 <div className="space-y-1">
                   {status.warnings.map((warning, index) => (
-                    <div key={index} className="flex items-start gap-2 p-2 bg-yellow-50 rounded-md">
+                    <div
+                      key={index}
+                      className="flex items-start gap-2 p-2 bg-yellow-50 rounded-md"
+                    >
                       <AlertCircle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                       <p className="text-sm text-yellow-800">{warning}</p>
                     </div>
@@ -234,5 +297,5 @@ export function ProcessingPipeline({ status, onPause, onResume, onRestart, onCon
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,47 +1,76 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Download, FileText, Package, Clock, CheckCircle, AlertCircle } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Download,
+  FileText,
+  Package,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 interface ExportManagerProps {
-  onExport?: (config: ExportConfiguration) => void
-  exportHistory?: ExportHistoryItem[]
+  onExport?: (config: ExportConfiguration) => void;
+  exportHistory?: ExportHistoryItem[];
 }
 
 interface ExportConfiguration {
-  format: "json" | "csv" | "xlsx" | "pdf" | "html" | "markdown" | "figma-tokens"
+  format:
+    | "json"
+    | "csv"
+    | "xlsx"
+    | "pdf"
+    | "html"
+    | "markdown"
+    | "figma-tokens";
   options: {
-    includeMetadata: boolean
-    includeQualityMetrics: boolean
-    includeAccessibilityReport: boolean
-    includePerformanceMetrics: boolean
-    includeRecommendations: boolean
-    includeCodeGeneration: boolean
-    compression: "none" | "gzip" | "brotli"
-    formatting: "minified" | "pretty"
-  }
+    includeMetadata: boolean;
+    includeQualityMetrics: boolean;
+    includeAccessibilityReport: boolean;
+    includePerformanceMetrics: boolean;
+    includeRecommendations: boolean;
+    includeCodeGeneration: boolean;
+    compression: "none" | "gzip" | "brotli";
+    formatting: "minified" | "pretty";
+  };
   destination: {
-    type: "download" | "email" | "webhook" | "cloud-storage"
-    config: Record<string, any>
-  }
+    type: "download" | "email" | "webhook" | "cloud-storage";
+    config: Record<string, any>;
+  };
 }
 
 interface ExportHistoryItem {
-  id: string
-  format: string
-  timestamp: Date
-  status: "completed" | "failed" | "in-progress"
-  size: number
-  downloadUrl?: string
+  id: string;
+  format: string;
+  timestamp: Date;
+  status: "completed" | "failed" | "in-progress";
+  size: number;
+  downloadUrl?: string;
 }
 
-export function ExportManager({ onExport, exportHistory = [] }: ExportManagerProps) {
+export function ExportManager({
+  onExport,
+  exportHistory = [],
+}: ExportManagerProps) {
   const [exportConfig, setExportConfig] = useState<ExportConfiguration>({
     format: "json",
     options: {
@@ -58,81 +87,86 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
       type: "download",
       config: {},
     },
-  })
+  });
 
-  const [isExporting, setIsExporting] = useState(false)
-  const [exportProgress, setExportProgress] = useState(0)
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
 
   const handleExport = async () => {
-    setIsExporting(true)
-    setExportProgress(0)
+    setIsExporting(true);
+    setExportProgress(0);
 
     // Simulate export progress
     const progressInterval = setInterval(() => {
       setExportProgress((prev) => {
         if (prev >= 100) {
-          clearInterval(progressInterval)
-          setIsExporting(false)
-          return 100
+          clearInterval(progressInterval);
+          setIsExporting(false);
+          return 100;
         }
-        return prev + 10
-      })
-    }, 200)
+        return prev + 10;
+      });
+    }, 200);
 
-    onExport?.(exportConfig)
-  }
+    onExport?.(exportConfig);
+  };
 
-  const updateExportOption = (key: keyof ExportConfiguration["options"], value: any) => {
+  const updateExportOption = (
+    key: keyof ExportConfiguration["options"],
+    value: any,
+  ) => {
     setExportConfig((prev) => ({
       ...prev,
       options: {
         ...prev.options,
         [key]: value,
       },
-    }))
-  }
+    }));
+  };
 
   const getFormatIcon = (format: string) => {
     switch (format) {
       case "json":
-        return <FileText className="h-4 w-4 text-blue-600" />
+        return <FileText className="h-4 w-4 text-blue-600" />;
       case "csv":
-        return <FileText className="h-4 w-4 text-green-600" />
+        return <FileText className="h-4 w-4 text-green-600" />;
       case "xlsx":
-        return <FileText className="h-4 w-4 text-green-700" />
+        return <FileText className="h-4 w-4 text-green-700" />;
       case "pdf":
-        return <FileText className="h-4 w-4 text-red-600" />
+        return <FileText className="h-4 w-4 text-red-600" />;
       case "html":
-        return <FileText className="h-4 w-4 text-orange-600" />
+        return <FileText className="h-4 w-4 text-orange-600" />;
       case "markdown":
-        return <FileText className="h-4 w-4 text-purple-600" />
+        return <FileText className="h-4 w-4 text-purple-600" />;
       case "figma-tokens":
-        return <Package className="h-4 w-4 text-pink-600" />
+        return <Package className="h-4 w-4 text-pink-600" />;
       default:
-        return <FileText className="h-4 w-4 text-gray-600" />
+        return <FileText className="h-4 w-4 text-gray-600" />;
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
-        return <CheckCircle className="h-4 w-4 text-green-600" />
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
       case "failed":
-        return <AlertCircle className="h-4 w-4 text-red-600" />
+        return <AlertCircle className="h-4 w-4 text-red-600" />;
       case "in-progress":
-        return <Clock className="h-4 w-4 text-blue-600" />
+        return <Clock className="h-4 w-4 text-blue-600" />;
       default:
-        return <Clock className="h-4 w-4 text-gray-600" />
+        return <Clock className="h-4 w-4 text-gray-600" />;
     }
-  }
+  };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes"
-    const k = 1024
-    const sizes = ["Bytes", "KB", "MB", "GB"]
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-  }
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (
+      Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -143,7 +177,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
             <Download className="h-5 w-5" />
             Export Configuration
           </CardTitle>
-          <CardDescription>Configure your export settings and download options</CardDescription>
+          <CardDescription>
+            Configure your export settings and download options
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Format Selection */}
@@ -151,7 +187,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
             <label className="text-sm font-medium">Export Format</label>
             <Select
               value={exportConfig.format}
-              onValueChange={(value: any) => setExportConfig((prev) => ({ ...prev, format: value }))}
+              onValueChange={(value: any) =>
+                setExportConfig((prev) => ({ ...prev, format: value }))
+              }
             >
               <SelectTrigger>
                 <SelectValue />
@@ -211,7 +249,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
                 <Checkbox
                   id="metadata"
                   checked={exportConfig.options.includeMetadata}
-                  onCheckedChange={(checked) => updateExportOption("includeMetadata", checked)}
+                  onCheckedChange={(checked) =>
+                    updateExportOption("includeMetadata", checked)
+                  }
                 />
                 <label htmlFor="metadata" className="text-sm">
                   File metadata
@@ -222,7 +262,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
                 <Checkbox
                   id="quality"
                   checked={exportConfig.options.includeQualityMetrics}
-                  onCheckedChange={(checked) => updateExportOption("includeQualityMetrics", checked)}
+                  onCheckedChange={(checked) =>
+                    updateExportOption("includeQualityMetrics", checked)
+                  }
                 />
                 <label htmlFor="quality" className="text-sm">
                   Quality metrics
@@ -233,7 +275,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
                 <Checkbox
                   id="accessibility"
                   checked={exportConfig.options.includeAccessibilityReport}
-                  onCheckedChange={(checked) => updateExportOption("includeAccessibilityReport", checked)}
+                  onCheckedChange={(checked) =>
+                    updateExportOption("includeAccessibilityReport", checked)
+                  }
                 />
                 <label htmlFor="accessibility" className="text-sm">
                   Accessibility report
@@ -244,7 +288,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
                 <Checkbox
                   id="performance"
                   checked={exportConfig.options.includePerformanceMetrics}
-                  onCheckedChange={(checked) => updateExportOption("includePerformanceMetrics", checked)}
+                  onCheckedChange={(checked) =>
+                    updateExportOption("includePerformanceMetrics", checked)
+                  }
                 />
                 <label htmlFor="performance" className="text-sm">
                   Performance metrics
@@ -255,7 +301,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
                 <Checkbox
                   id="recommendations"
                   checked={exportConfig.options.includeRecommendations}
-                  onCheckedChange={(checked) => updateExportOption("includeRecommendations", checked)}
+                  onCheckedChange={(checked) =>
+                    updateExportOption("includeRecommendations", checked)
+                  }
                 />
                 <label htmlFor="recommendations" className="text-sm">
                   Recommendations
@@ -266,7 +314,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
                 <Checkbox
                   id="code"
                   checked={exportConfig.options.includeCodeGeneration}
-                  onCheckedChange={(checked) => updateExportOption("includeCodeGeneration", checked)}
+                  onCheckedChange={(checked) =>
+                    updateExportOption("includeCodeGeneration", checked)
+                  }
                 />
                 <label htmlFor="code" className="text-sm">
                   Generated code
@@ -281,7 +331,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
               <label className="text-sm font-medium">Compression</label>
               <Select
                 value={exportConfig.options.compression}
-                onValueChange={(value: any) => updateExportOption("compression", value)}
+                onValueChange={(value: any) =>
+                  updateExportOption("compression", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -298,7 +350,9 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
               <label className="text-sm font-medium">Formatting</label>
               <Select
                 value={exportConfig.options.formatting}
-                onValueChange={(value: any) => updateExportOption("formatting", value)}
+                onValueChange={(value: any) =>
+                  updateExportOption("formatting", value)
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -317,13 +371,19 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Exporting...</span>
-                  <span className="text-sm text-muted-foreground">{exportProgress}%</span>
+                  <span className="text-sm text-muted-foreground">
+                    {exportProgress}%
+                  </span>
                 </div>
                 <Progress value={exportProgress} className="h-2" />
               </div>
             )}
 
-            <Button onClick={handleExport} disabled={isExporting} className="w-full">
+            <Button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="w-full"
+            >
               <Download className="h-4 w-4 mr-2" />
               {isExporting ? "Exporting..." : "Export Data"}
             </Button>
@@ -341,13 +401,19 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
           <CardContent>
             <div className="space-y-3">
               {exportHistory.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 rounded-md border">
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-3 rounded-md border"
+                >
                   <div className="flex items-center gap-3">
                     {getFormatIcon(item.format)}
                     <div className="space-y-1">
-                      <p className="text-sm font-medium">{item.format.toUpperCase()} Export</p>
+                      <p className="text-sm font-medium">
+                        {item.format.toUpperCase()} Export
+                      </p>
                       <p className="text-xs text-muted-foreground">
-                        {item.timestamp.toLocaleString()} • {formatFileSize(item.size)}
+                        {item.timestamp.toLocaleString()} •{" "}
+                        {formatFileSize(item.size)}
                       </p>
                     </div>
                   </div>
@@ -384,5 +450,5 @@ export function ExportManager({ onExport, exportHistory = [] }: ExportManagerPro
         </Card>
       )}
     </div>
-  )
+  );
 }

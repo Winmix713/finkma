@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
 /**
  * Main CodePreview component - Production-ready code preview with syntax highlighting
  */
 
-import { useState, useCallback, useEffect, useMemo } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertTriangle } from "lucide-react"
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
 
-import type { CodePreviewProps, CodePreviewError } from "@/types/code-preview"
-import { DEFAULT_COMPONENT_NAME, ARIA_LABELS } from "@/constants/code-preview"
+import type { CodePreviewProps, CodePreviewError } from "@/types/code-preview";
+import { DEFAULT_COMPONENT_NAME, ARIA_LABELS } from "@/constants/code-preview";
 
-import { useClipboard } from "@/hooks/use-clipboard"
-import { useFileDownload } from "@/hooks/use-file-download"
-import { useTabConfig } from "@/hooks/use-tab-config"
-import { useTheme } from "@/hooks/use-theme"
+import { useClipboard } from "@/hooks/use-clipboard";
+import { useFileDownload } from "@/hooks/use-file-download";
+import { useTabConfig } from "@/hooks/use-tab-config";
+import { useTheme } from "@/hooks/use-theme";
 
-import { CodePreviewErrorBoundary } from "@/components/error-boundary"
-import { SyntaxHighlighterWrapper } from "@/components/syntax-highlighter-wrapper"
-import { TabActions } from "@/components/tab-actions"
+import { CodePreviewErrorBoundary } from "@/components/error-boundary";
+import { SyntaxHighlighterWrapper } from "@/components/syntax-highlighter-wrapper";
+import { TabActions } from "@/components/tab-actions";
 
 /**
  * CodePreview Component
@@ -54,126 +54,156 @@ export function CodePreview({
   onError,
 }: CodePreviewProps) {
   // Theme management
-  const { theme: currentTheme, getSyntaxTheme, getReducedMotion } = useTheme(theme)
+  const {
+    theme: currentTheme,
+    getSyntaxTheme,
+    getReducedMotion,
+  } = useTheme(theme);
 
   // Tab configuration
-  const hasTypeScript = !!(content.typescript || (content.jsx && content.jsx.includes("interface ")))
-  const { availableTabs, getTabContent, getDefaultTab, getFileName, isTabEmpty } = useTabConfig(content, hasTypeScript)
+  const hasTypeScript = !!(
+    content.typescript ||
+    (content.jsx && content.jsx.includes("interface "))
+  );
+  const {
+    availableTabs,
+    getTabContent,
+    getDefaultTab,
+    getFileName,
+    isTabEmpty,
+  } = useTabConfig(content, hasTypeScript);
 
   // Active tab state
   const [activeTab, setActiveTab] = useState<string>(() => {
-    return defaultTab && availableTabs.some((tab) => tab.id === defaultTab) ? defaultTab : getDefaultTab()
-  })
+    return defaultTab && availableTabs.some((tab) => tab.id === defaultTab)
+      ? defaultTab
+      : getDefaultTab();
+  });
 
   // Clipboard and download hooks
-  const clipboard = useClipboard()
-  const download = useFileDownload()
+  const clipboard = useClipboard();
+  const download = useFileDownload();
 
   // Error state
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null);
 
   // Update active tab when available tabs change
   useEffect(() => {
     if (!availableTabs.some((tab) => tab.id === activeTab)) {
-      const newTab = getDefaultTab()
-      setActiveTab(newTab)
-      onTabChange?.(newTab)
+      const newTab = getDefaultTab();
+      setActiveTab(newTab);
+      onTabChange?.(newTab);
     }
-  }, [availableTabs, activeTab, getDefaultTab, onTabChange])
+  }, [availableTabs, activeTab, getDefaultTab, onTabChange]);
 
   // Handle tab change
   const handleTabChange = useCallback(
     (tabId: string) => {
-      setActiveTab(tabId)
-      onTabChange?.(tabId)
-      setError(null) // Clear any previous errors
+      setActiveTab(tabId);
+      onTabChange?.(tabId);
+      setError(null); // Clear any previous errors
     },
     [onTabChange],
-  )
+  );
 
   // Handle copy operation
   const handleCopy = useCallback(
     async (content: string, tabId: string) => {
       try {
-        await clipboard.copyToClipboard(content, tabId)
-        onCopy?.(content, tabId)
+        await clipboard.copyToClipboard(content, tabId);
+        onCopy?.(content, tabId);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Copy failed"
-        setError(errorMessage)
-        onError?.(error as CodePreviewError)
+        const errorMessage =
+          error instanceof Error ? error.message : "Copy failed";
+        setError(errorMessage);
+        onError?.(error as CodePreviewError);
       }
     },
     [clipboard, onCopy, onError],
-  )
+  );
 
   // Handle download operation
   const handleDownload = useCallback(
     async (content: string, filename: string) => {
       try {
-        const extension = filename.substring(filename.lastIndexOf("."))
-        await download.downloadWithExtension(content, filename, extension)
-        onDownload?.(filename, content)
+        const extension = filename.substring(filename.lastIndexOf("."));
+        await download.downloadWithExtension(content, filename, extension);
+        onDownload?.(filename, content);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Download failed"
-        setError(errorMessage)
-        onError?.(error as CodePreviewError)
+        const errorMessage =
+          error instanceof Error ? error.message : "Download failed";
+        setError(errorMessage);
+        onError?.(error as CodePreviewError);
       }
     },
     [download, onDownload, onError],
-  )
+  );
 
   // Handle keyboard shortcuts
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && !event.shiftKey && !event.altKey) {
-        const currentContent = getTabContent(activeTab)
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        !event.shiftKey &&
+        !event.altKey
+      ) {
+        const currentContent = getTabContent(activeTab);
 
         switch (event.key.toLowerCase()) {
           case "c":
             if (currentContent.trim()) {
-              event.preventDefault()
-              handleCopy(currentContent, activeTab)
+              event.preventDefault();
+              handleCopy(currentContent, activeTab);
             }
-            break
+            break;
           case "s":
             if (currentContent.trim()) {
-              event.preventDefault()
-              const filename = getFileName(activeTab, componentName)
-              handleDownload(currentContent, filename)
+              event.preventDefault();
+              const filename = getFileName(activeTab, componentName);
+              handleDownload(currentContent, filename);
             }
-            break
+            break;
         }
       }
     },
-    [activeTab, getTabContent, getFileName, componentName, handleCopy, handleDownload],
-  )
+    [
+      activeTab,
+      getTabContent,
+      getFileName,
+      componentName,
+      handleCopy,
+      handleDownload,
+    ],
+  );
 
   // Add keyboard event listeners
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [handleKeyDown])
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      clipboard.cleanup()
-      download.cleanup()
-    }
-  }, [clipboard, download])
+      clipboard.cleanup();
+      download.cleanup();
+    };
+  }, [clipboard, download]);
 
   // Memoized values
-  const syntaxTheme = useMemo(() => getSyntaxTheme(), [getSyntaxTheme])
-  const reduceMotion = useMemo(() => getReducedMotion(), [getReducedMotion])
+  const syntaxTheme = useMemo(() => getSyntaxTheme(), [getSyntaxTheme]);
+  const reduceMotion = useMemo(() => getReducedMotion(), [getReducedMotion]);
 
   // Early return if no tabs available
   if (availableTabs.length === 0) {
     return (
       <Alert>
         <AlertTriangle className="h-4 w-4" />
-        <AlertDescription>No code content available to display.</AlertDescription>
+        <AlertDescription>
+          No code content available to display.
+        </AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -192,10 +222,18 @@ export function CodePreview({
           </Alert>
         )}
 
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
           {/* Tab list */}
           <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid w-auto grid-cols-auto gap-1" role="tablist" aria-label={ARIA_LABELS.TAB_LIST}>
+            <TabsList
+              className="grid w-auto grid-cols-auto gap-1"
+              role="tablist"
+              aria-label={ARIA_LABELS.TAB_LIST}
+            >
               {availableTabs.map((tab) => (
                 <TabsTrigger
                   key={tab.id}
@@ -255,12 +293,14 @@ export function CodePreview({
 
         {/* Keyboard shortcuts help (screen reader only) */}
         <div className="sr-only" role="region" aria-label="Keyboard shortcuts">
-          <p>Keyboard shortcuts: Ctrl+C to copy, Ctrl+S to download current tab</p>
+          <p>
+            Keyboard shortcuts: Ctrl+C to copy, Ctrl+S to download current tab
+          </p>
         </div>
       </div>
     </CodePreviewErrorBoundary>
-  )
+  );
 }
 
 // Export with error boundary HOC for additional safety
-export default CodePreview
+export default CodePreview;

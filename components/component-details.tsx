@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import { Suspense, lazy } from "react"
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Copy, Download, AlertTriangle, CheckCircle } from "lucide-react"
-import type { GeneratedComponent } from "@/types/figma"
-import type { CodeGenerationOptions } from "@/services/advanced-code-generator"
+import { Suspense, lazy } from "react";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Copy, Download, AlertTriangle, CheckCircle } from "lucide-react";
+import type { GeneratedComponent } from "@/types/figma";
+import type { CodeGenerationOptions } from "@/services/advanced-code-generator";
 
 // Lazy load syntax highlighter for better performance
 const SyntaxHighlighter = lazy(() =>
   import("react-syntax-highlighter").then((module) => ({
     default: module.Prism,
   })),
-)
+);
 
 interface ComponentDetailsProps {
-  component: GeneratedComponent
-  options: CodeGenerationOptions
-  activeTab: string
-  onTabChange: (tab: string) => void
-  onCopy: (content: string, type: string) => void
-  onDownload: (content: string, filename: string) => void
-  copied: string | null
+  component: GeneratedComponent;
+  options: CodeGenerationOptions;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  onCopy: (content: string, type: string) => void;
+  onDownload: (content: string, filename: string) => void;
+  copied: string | null;
 }
 
 export function ComponentDetails({
@@ -38,41 +38,41 @@ export function ComponentDetails({
   const getFileExtension = (type: string) => {
     switch (type) {
       case "jsx":
-        return options.typescript ? ".tsx" : ".jsx"
+        return options.typescript ? ".tsx" : ".jsx";
       case "css":
-        return ".css"
+        return ".css";
       case "typescript":
-        return ".d.ts"
+        return ".d.ts";
       default:
-        return ".txt"
+        return ".txt";
     }
-  }
+  };
 
   const getContent = (type: string) => {
     switch (type) {
       case "jsx":
-        return component.jsx
+        return component.jsx;
       case "css":
-        return component.css
+        return component.css;
       case "typescript":
-        return component.typescript || ""
+        return component.typescript || "";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const getLanguage = (type: string) => {
     switch (type) {
       case "jsx":
-        return options.typescript ? "tsx" : "jsx"
+        return options.typescript ? "tsx" : "jsx";
       case "css":
-        return "css"
+        return "css";
       case "typescript":
-        return "typescript"
+        return "typescript";
       default:
-        return "text"
+        return "text";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -83,23 +83,35 @@ export function ComponentDetails({
           <div>
             <div className="flex items-center justify-between mb-1">
               <span className="text-sm">Accessibility</span>
-              <span className="text-sm font-medium">{component.accessibility.score}%</span>
+              <span className="text-sm font-medium">
+                {component.accessibility.score}%
+              </span>
             </div>
             <Progress value={component.accessibility.score} className="h-2" />
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
               <span className="text-sm">Vizuális Pontosság</span>
-              <span className="text-sm font-medium">{component.metadata.estimatedAccuracy}%</span>
+              <span className="text-sm font-medium">
+                {component.metadata.estimatedAccuracy}%
+              </span>
             </div>
-            <Progress value={component.metadata.estimatedAccuracy} className="h-2" />
+            <Progress
+              value={component.metadata.estimatedAccuracy}
+              className="h-2"
+            />
           </div>
           <div>
             <div className="flex items-center justify-between mb-1">
               <span className="text-sm">Responsive</span>
-              <span className="text-sm font-medium">{component.responsive.hasResponsiveDesign ? "100%" : "0%"}</span>
+              <span className="text-sm font-medium">
+                {component.responsive.hasResponsiveDesign ? "100%" : "0%"}
+              </span>
             </div>
-            <Progress value={component.responsive.hasResponsiveDesign ? 100 : 0} className="h-2" />
+            <Progress
+              value={component.responsive.hasResponsiveDesign ? 100 : 0}
+              className="h-2"
+            />
           </div>
         </div>
       </div>
@@ -108,9 +120,13 @@ export function ComponentDetails({
       <Tabs value={activeTab} onValueChange={onTabChange}>
         <div className="flex items-center justify-between mb-4">
           <TabsList>
-            <TabsTrigger value="jsx">{options.typescript ? "TSX" : "JSX"}</TabsTrigger>
+            <TabsTrigger value="jsx">
+              {options.typescript ? "TSX" : "JSX"}
+            </TabsTrigger>
             <TabsTrigger value="css">CSS</TabsTrigger>
-            {options.typescript && component.typescript && <TabsTrigger value="typescript">Types</TabsTrigger>}
+            {options.typescript && component.typescript && (
+              <TabsTrigger value="typescript">Types</TabsTrigger>
+            )}
           </TabsList>
 
           <div className="flex items-center space-x-2">
@@ -126,7 +142,12 @@ export function ComponentDetails({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onDownload(getContent(activeTab), `${component.name}${getFileExtension(activeTab)}`)}
+              onClick={() =>
+                onDownload(
+                  getContent(activeTab),
+                  `${component.name}${getFileExtension(activeTab)}`,
+                )
+              }
               disabled={!getContent(activeTab)}
             >
               <Download className="w-4 h-4 mr-1" />
@@ -137,7 +158,11 @@ export function ComponentDetails({
 
         <TabsContent value="jsx">
           <div className="max-h-96 overflow-auto rounded-lg border">
-            <Suspense fallback={<div className="p-4">Loading syntax highlighter...</div>}>
+            <Suspense
+              fallback={
+                <div className="p-4">Loading syntax highlighter...</div>
+              }
+            >
               <SyntaxHighlighter
                 language={getLanguage("jsx")}
                 style={{
@@ -145,7 +170,8 @@ export function ComponentDetails({
                     color: "#f8f8f2",
                     background: "none",
                     textShadow: "0 1px rgba(0, 0, 0, 0.3)",
-                    fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                    fontFamily:
+                      'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
                     fontSize: "1em",
                     textAlign: "left",
                     whiteSpace: "pre",
@@ -160,7 +186,8 @@ export function ComponentDetails({
                     color: "#f8f8f2",
                     background: "#2d3748",
                     textShadow: "0 1px rgba(0, 0, 0, 0.3)",
-                    fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                    fontFamily:
+                      'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
                     fontSize: "1em",
                     textAlign: "left",
                     whiteSpace: "pre",
@@ -192,7 +219,11 @@ export function ComponentDetails({
 
         <TabsContent value="css">
           <div className="max-h-96 overflow-auto rounded-lg border">
-            <Suspense fallback={<div className="p-4">Loading syntax highlighter...</div>}>
+            <Suspense
+              fallback={
+                <div className="p-4">Loading syntax highlighter...</div>
+              }
+            >
               <SyntaxHighlighter
                 language="css"
                 style={{
@@ -200,7 +231,8 @@ export function ComponentDetails({
                     color: "#f8f8f2",
                     background: "none",
                     textShadow: "0 1px rgba(0, 0, 0, 0.3)",
-                    fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                    fontFamily:
+                      'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
                     fontSize: "1em",
                     textAlign: "left",
                     whiteSpace: "pre",
@@ -215,7 +247,8 @@ export function ComponentDetails({
                     color: "#f8f8f2",
                     background: "#2d3748",
                     textShadow: "0 1px rgba(0, 0, 0, 0.3)",
-                    fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                    fontFamily:
+                      'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
                     fontSize: "1em",
                     textAlign: "left",
                     whiteSpace: "pre",
@@ -248,7 +281,11 @@ export function ComponentDetails({
         {options.typescript && component.typescript && (
           <TabsContent value="typescript">
             <div className="max-h-96 overflow-auto rounded-lg border">
-              <Suspense fallback={<div className="p-4">Loading syntax highlighter...</div>}>
+              <Suspense
+                fallback={
+                  <div className="p-4">Loading syntax highlighter...</div>
+                }
+              >
                 <SyntaxHighlighter
                   language="typescript"
                   style={{
@@ -256,7 +293,8 @@ export function ComponentDetails({
                       color: "#f8f8f2",
                       background: "none",
                       textShadow: "0 1px rgba(0, 0, 0, 0.3)",
-                      fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                      fontFamily:
+                        'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
                       fontSize: "1em",
                       textAlign: "left",
                       whiteSpace: "pre",
@@ -271,7 +309,8 @@ export function ComponentDetails({
                       color: "#f8f8f2",
                       background: "#2d3748",
                       textShadow: "0 1px rgba(0, 0, 0, 0.3)",
-                      fontFamily: 'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
+                      fontFamily:
+                        'Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace',
                       fontSize: "1em",
                       textAlign: "left",
                       whiteSpace: "pre",
@@ -314,7 +353,11 @@ export function ComponentDetails({
                 <div key={index} className="text-sm">
                   <div className="font-medium">{issue.message}</div>
                   <div className="text-gray-600">Javítás: {issue.fix}</div>
-                  {issue.wcagRule && <div className="text-xs text-gray-500">WCAG szabály: {issue.wcagRule}</div>}
+                  {issue.wcagRule && (
+                    <div className="text-xs text-gray-500">
+                      WCAG szabály: {issue.wcagRule}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -328,7 +371,10 @@ export function ComponentDetails({
           <h4 className="font-semibold text-blue-800 mb-2">Javaslatok</h4>
           <ul className="space-y-1">
             {component.accessibility.suggestions.map((suggestion, index) => (
-              <li key={index} className="text-sm text-blue-700 flex items-start">
+              <li
+                key={index}
+                className="text-sm text-blue-700 flex items-start"
+              >
                 <CheckCircle className="w-3 h-3 mr-2 mt-0.5 flex-shrink-0" />
                 {suggestion}
               </li>
@@ -339,26 +385,36 @@ export function ComponentDetails({
 
       {/* Performance Metrics */}
       <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-        <h4 className="font-semibold text-green-800 mb-2">Teljesítmény Mutatók</h4>
+        <h4 className="font-semibold text-green-800 mb-2">
+          Teljesítmény Mutatók
+        </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <div className="font-medium text-green-700">Bundle méret</div>
-            <div className="text-green-600">{Math.round(component.performance.bundleSize / 1024)} KB</div>
+            <div className="text-green-600">
+              {Math.round(component.performance.bundleSize / 1024)} KB
+            </div>
           </div>
           <div>
             <div className="font-medium text-green-700">Render idő</div>
-            <div className="text-green-600">{component.performance.renderTime}ms</div>
+            <div className="text-green-600">
+              {component.performance.renderTime}ms
+            </div>
           </div>
           <div>
             <div className="font-medium text-green-700">Memória</div>
-            <div className="text-green-600">{Math.round(component.performance.memoryUsage / 1024)} KB</div>
+            <div className="text-green-600">
+              {Math.round(component.performance.memoryUsage / 1024)} KB
+            </div>
           </div>
           <div>
             <div className="font-medium text-green-700">Re-render</div>
-            <div className="text-green-600">{component.performance.reRenderCount}x</div>
+            <div className="text-green-600">
+              {component.performance.reRenderCount}x
+            </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

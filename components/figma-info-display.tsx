@@ -1,35 +1,59 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { FileInfoPanel } from "./display/file-info-panel"
-import { StatisticsDashboard } from "./display/statistics-dashboard"
-import { NodeTreeExplorer } from "./display/node-tree-explorer"
-import { QualityReport } from "./quality/quality-report"
-import { ProcessingPipeline } from "./processing/processing-pipeline"
-import { AccessibilityAudit } from "./quality/accessibility-audit"
-import { PerformanceMetrics } from "./quality/performance-metrics"
-import { ComponentBrowser } from "./display/component-browser"
-import { StyleAnalyzer } from "./display/style-analyzer"
-import { ExportManager } from "./export/export-manager"
-import { AdvancedSearch } from "./search/advanced-search"
-import { FigmaAnalyzer } from "../services/figma-analyzer"
-import { FileText, BarChart3, Search, Settings, Download, RefreshCw, AlertCircle } from "lucide-react"
-import type { FigmaApiResponse } from "../types/figma-api"
-import type { FigmaFileAnalysis, ProcessingStatus, InteractionState } from "../types/figma-info-display"
+import { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { FileInfoPanel } from "./display/file-info-panel";
+import { StatisticsDashboard } from "./display/statistics-dashboard";
+import { NodeTreeExplorer } from "./display/node-tree-explorer";
+import { QualityReport } from "./quality/quality-report";
+import { ProcessingPipeline } from "./processing/processing-pipeline";
+import { AccessibilityAudit } from "./quality/accessibility-audit";
+import { PerformanceMetrics } from "./quality/performance-metrics";
+import { ComponentBrowser } from "./display/component-browser";
+import { StyleAnalyzer } from "./display/style-analyzer";
+import { ExportManager } from "./export/export-manager";
+import { AdvancedSearch } from "./search/advanced-search";
+import { FigmaAnalyzer } from "../services/figma-analyzer";
+import {
+  FileText,
+  BarChart3,
+  Search,
+  Settings,
+  Download,
+  RefreshCw,
+  AlertCircle,
+} from "lucide-react";
+import type { FigmaApiResponse } from "../types/figma-api";
+import type {
+  FigmaFileAnalysis,
+  ProcessingStatus,
+  InteractionState,
+} from "../types/figma-info-display";
 
 interface FigmaInfoDisplayProps {
-  figmaData: FigmaApiResponse | null
-  isLoading?: boolean
-  error?: string | null
-  onRefresh?: () => void
+  figmaData: FigmaApiResponse | null;
+  isLoading?: boolean;
+  error?: string | null;
+  onRefresh?: () => void;
 }
 
-export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, onRefresh }: FigmaInfoDisplayProps) {
-  const [analysis, setAnalysis] = useState<FigmaFileAnalysis | null>(null)
-  const [processingStatus, setProcessingStatus] = useState<ProcessingStatus | null>(null)
+export function FigmaInfoDisplay({
+  figmaData,
+  isLoading = false,
+  error = null,
+  onRefresh,
+}: FigmaInfoDisplayProps) {
+  const [analysis, setAnalysis] = useState<FigmaFileAnalysis | null>(null);
+  const [processingStatus, setProcessingStatus] =
+    useState<ProcessingStatus | null>(null);
   const [interactionState, setInteractionState] = useState<InteractionState>({
     selectedNodes: [],
     expandedNodes: new Set(),
@@ -37,17 +61,17 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
     searchQuery: "",
     searchResults: [],
     activeFilters: [],
-  })
-  const [analyzer] = useState(() => new FigmaAnalyzer())
+  });
+  const [analyzer] = useState(() => new FigmaAnalyzer());
 
   useEffect(() => {
     if (figmaData) {
-      analyzeFile()
+      analyzeFile();
     }
-  }, [figmaData])
+  }, [figmaData]);
 
   const analyzeFile = async () => {
-    if (!figmaData) return
+    if (!figmaData) return;
 
     setProcessingStatus({
       id: `analysis-${Date.now()}`,
@@ -57,16 +81,16 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
       startTime: new Date(),
       errors: [],
       warnings: [],
-    })
+    });
 
     try {
       const result = await analyzer.analyzeFigmaFile(figmaData, {
         includeAccessibility: true,
         includePerformance: true,
         includeQuality: true,
-      })
+      });
 
-      setAnalysis(result)
+      setAnalysis(result);
       setProcessingStatus((prev) =>
         prev
           ? {
@@ -76,7 +100,7 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
               message: "Analysis completed successfully",
             }
           : null,
-      )
+      );
     } catch (error) {
       setProcessingStatus((prev) =>
         prev
@@ -85,40 +109,42 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
               stage: "Error",
               progress: 0,
               message: "Analysis failed",
-              errors: [error instanceof Error ? error.message : "Unknown error"],
+              errors: [
+                error instanceof Error ? error.message : "Unknown error",
+              ],
             }
           : null,
-      )
+      );
     }
-  }
+  };
 
   const handleNodeSelection = (nodeIds: string[]) => {
     setInteractionState((prev) => ({
       ...prev,
       selectedNodes: nodeIds,
-    }))
-  }
+    }));
+  };
 
   const handleNodeExpansion = (nodeId: string, expanded: boolean) => {
     setInteractionState((prev) => {
-      const newExpandedNodes = new Set(prev.expandedNodes)
-      const newCollapsedNodes = new Set(prev.collapsedNodes)
+      const newExpandedNodes = new Set(prev.expandedNodes);
+      const newCollapsedNodes = new Set(prev.collapsedNodes);
 
       if (expanded) {
-        newExpandedNodes.add(nodeId)
-        newCollapsedNodes.delete(nodeId)
+        newExpandedNodes.add(nodeId);
+        newCollapsedNodes.delete(nodeId);
       } else {
-        newExpandedNodes.delete(nodeId)
-        newCollapsedNodes.add(nodeId)
+        newExpandedNodes.delete(nodeId);
+        newCollapsedNodes.add(nodeId);
       }
 
       return {
         ...prev,
         expandedNodes: newExpandedNodes,
         collapsedNodes: newCollapsedNodes,
-      }
-    })
-  }
+      };
+    });
+  };
 
   // Loading state
   if (isLoading) {
@@ -127,11 +153,13 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
         <CardContent className="flex items-center justify-center py-12">
           <div className="text-center space-y-4">
             <RefreshCw className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">Loading Figma file...</p>
+            <p className="text-sm text-muted-foreground">
+              Loading Figma file...
+            </p>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   // Error state
@@ -154,7 +182,7 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   // No data state
@@ -164,17 +192,21 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
         <CardContent className="flex items-center justify-center py-12">
           <div className="text-center space-y-4">
             <FileText className="h-8 w-8 mx-auto text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">No Figma file loaded</p>
+            <p className="text-sm text-muted-foreground">
+              No Figma file loaded
+            </p>
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
       {/* Processing Status */}
-      {processingStatus && <ProcessingPipeline status={processingStatus} onRestart={analyzeFile} />}
+      {processingStatus && (
+        <ProcessingPipeline status={processingStatus} onRestart={analyzeFile} />
+      )}
 
       {/* Main Content */}
       {analysis && (
@@ -213,7 +245,10 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
                 <FileInfoPanel fileInfo={analysis.fileInfo} />
               </div>
               <div className="lg:col-span-2">
-                <StatisticsDashboard statistics={analysis.statistics} qualityMetrics={analysis.qualityMetrics} />
+                <StatisticsDashboard
+                  statistics={analysis.statistics}
+                  qualityMetrics={analysis.qualityMetrics}
+                />
               </div>
             </div>
           </TabsContent>
@@ -233,9 +268,14 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
               <div className="space-y-6">
                 <ComponentBrowser
                   components={analysis.components}
-                  onComponentSelect={(id) => console.log("Component selected:", id)}
+                  onComponentSelect={(id) =>
+                    console.log("Component selected:", id)
+                  }
                 />
-                <StyleAnalyzer styles={analysis.styles} onStyleSelect={(id) => console.log("Style selected:", id)} />
+                <StyleAnalyzer
+                  styles={analysis.styles}
+                  onStyleSelect={(id) => console.log("Style selected:", id)}
+                />
               </div>
             </div>
           </TabsContent>
@@ -267,13 +307,17 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
           <TabsContent value="search">
             <AdvancedSearch
               onSearch={(query) => console.log("Search:", query)}
-              onSaveSearch={(query, name) => console.log("Save search:", name, query)}
+              onSaveSearch={(query, name) =>
+                console.log("Save search:", name, query)
+              }
             />
           </TabsContent>
 
           {/* Export Tab */}
           <TabsContent value="export">
-            <ExportManager onExport={(config) => console.log("Export:", config)} />
+            <ExportManager
+              onExport={(config) => console.log("Export:", config)}
+            />
           </TabsContent>
 
           {/* Settings Tab */}
@@ -281,15 +325,19 @@ export function FigmaInfoDisplay({ figmaData, isLoading = false, error = null, o
             <Card>
               <CardHeader>
                 <CardTitle>Display Settings</CardTitle>
-                <CardDescription>Configure how the information is displayed</CardDescription>
+                <CardDescription>
+                  Configure how the information is displayed
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground">Settings panel coming soon...</p>
+                <p className="text-sm text-muted-foreground">
+                  Settings panel coming soon...
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       )}
     </div>
-  )
+  );
 }

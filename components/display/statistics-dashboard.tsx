@@ -1,74 +1,92 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { BarChart3, Layers, Component, Palette, TrendingUp, AlertTriangle, CheckCircle, Info } from "lucide-react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import {
+  BarChart3,
+  Layers,
+  Component,
+  Palette,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Info,
+} from "lucide-react";
 
 interface StatisticsDashboardProps {
   statistics: {
-    totalNodes: number
-    totalComponents: number
-    totalStyles: number
-    nodesByType: Record<string, number>
-    componentsByType: Record<string, number>
-    stylesByType: Record<string, number>
-  }
+    totalNodes: number;
+    totalComponents: number;
+    totalStyles: number;
+    nodesByType: Record<string, number>;
+    componentsByType: Record<string, number>;
+    stylesByType: Record<string, number>;
+  };
   qualityMetrics: {
-    overall: number
-    accessibility: number
-    performance: number
-    maintainability: number
+    overall: number;
+    accessibility: number;
+    performance: number;
+    maintainability: number;
     issues: Array<{
-      id: string
-      type: string
-      severity: "low" | "medium" | "high" | "critical"
-      message: string
-      nodeId?: string
-      recommendation?: string
-    }>
-  }
+      id: string;
+      type: string;
+      severity: "low" | "medium" | "high" | "critical";
+      message: string;
+      nodeId?: string;
+      recommendation?: string;
+    }>;
+  };
 }
 
-export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDashboardProps) {
+export function StatisticsDashboard({
+  statistics,
+  qualityMetrics,
+}: StatisticsDashboardProps) {
   const getQualityColor = (score: number) => {
-    if (score >= 90) return "text-green-600"
-    if (score >= 70) return "text-yellow-600"
-    return "text-red-600"
-  }
+    if (score >= 90) return "text-green-600";
+    if (score >= 70) return "text-yellow-600";
+    return "text-red-600";
+  };
 
   const getQualityIcon = (score: number) => {
-    if (score >= 90) return <CheckCircle className="h-4 w-4 text-green-600" />
-    if (score >= 70) return <Info className="h-4 w-4 text-yellow-600" />
-    return <AlertTriangle className="h-4 w-4 text-red-600" />
-  }
+    if (score >= 90) return <CheckCircle className="h-4 w-4 text-green-600" />;
+    if (score >= 70) return <Info className="h-4 w-4 text-yellow-600" />;
+    return <AlertTriangle className="h-4 w-4 text-red-600" />;
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "critical":
-        return "destructive"
+        return "destructive";
       case "high":
-        return "destructive"
+        return "destructive";
       case "medium":
-        return "secondary"
+        return "secondary";
       case "low":
-        return "outline"
+        return "outline";
       default:
-        return "outline"
+        return "outline";
     }
-  }
+  };
 
   const topNodeTypes = Object.entries(statistics.nodesByType)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 5)
+    .slice(0, 5);
 
   const issuesBySeverity = qualityMetrics.issues.reduce(
     (acc, issue) => {
-      acc[issue.severity] = (acc[issue.severity] || 0) + 1
-      return acc
+      acc[issue.severity] = (acc[issue.severity] || 0) + 1;
+      return acc;
     },
     {} as Record<string, number>,
-  )
+  );
 
   return (
     <div className="space-y-6">
@@ -79,7 +97,9 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
             <BarChart3 className="h-5 w-5" />
             File Statistics
           </CardTitle>
-          <CardDescription>Overview of your Figma file structure and composition</CardDescription>
+          <CardDescription>
+            Overview of your Figma file structure and composition
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
@@ -88,7 +108,9 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
                 <Layers className="h-8 w-8 text-blue-500" />
               </div>
               <div className="space-y-1">
-                <p className="text-2xl font-bold">{statistics.totalNodes.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  {statistics.totalNodes.toLocaleString()}
+                </p>
                 <p className="text-sm text-muted-foreground">Total Nodes</p>
               </div>
             </div>
@@ -98,7 +120,9 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
                 <Component className="h-8 w-8 text-purple-500" />
               </div>
               <div className="space-y-1">
-                <p className="text-2xl font-bold">{statistics.totalComponents}</p>
+                <p className="text-2xl font-bold">
+                  {statistics.totalComponents}
+                </p>
                 <p className="text-sm text-muted-foreground">Components</p>
               </div>
             </div>
@@ -120,16 +144,20 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
       <Card>
         <CardHeader>
           <CardTitle>Node Type Distribution</CardTitle>
-          <CardDescription>Breakdown of nodes by type in your design</CardDescription>
+          <CardDescription>
+            Breakdown of nodes by type in your design
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {topNodeTypes.map(([type, count]) => {
-              const percentage = (count / statistics.totalNodes) * 100
+              const percentage = (count / statistics.totalNodes) * 100;
               return (
                 <div key={type} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium capitalize">{type.toLowerCase().replace("_", " ")}</span>
+                    <span className="text-sm font-medium capitalize">
+                      {type.toLowerCase().replace("_", " ")}
+                    </span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-muted-foreground">
                         {count} ({percentage.toFixed(1)}%)
@@ -138,7 +166,7 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
                   </div>
                   <Progress value={percentage} className="h-2" />
                 </div>
-              )
+              );
             })}
           </div>
         </CardContent>
@@ -151,7 +179,9 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
             <TrendingUp className="h-5 w-5" />
             Quality Metrics
           </CardTitle>
-          <CardDescription>Assessment of design quality and best practices</CardDescription>
+          <CardDescription>
+            Assessment of design quality and best practices
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -161,7 +191,9 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
                 <span className="text-sm font-medium">Overall Quality</span>
                 <div className="flex items-center gap-2">
                   {getQualityIcon(qualityMetrics.overall)}
-                  <span className={`text-sm font-bold ${getQualityColor(qualityMetrics.overall)}`}>
+                  <span
+                    className={`text-sm font-bold ${getQualityColor(qualityMetrics.overall)}`}
+                  >
                     {qualityMetrics.overall}/100
                   </span>
                 </div>
@@ -173,18 +205,29 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Accessibility</span>
-                  <span className={`text-xs font-medium ${getQualityColor(qualityMetrics.accessibility)}`}>
+                  <span className="text-xs text-muted-foreground">
+                    Accessibility
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${getQualityColor(qualityMetrics.accessibility)}`}
+                  >
                     {qualityMetrics.accessibility}
                   </span>
                 </div>
-                <Progress value={qualityMetrics.accessibility} className="h-1" />
+                <Progress
+                  value={qualityMetrics.accessibility}
+                  className="h-1"
+                />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Performance</span>
-                  <span className={`text-xs font-medium ${getQualityColor(qualityMetrics.performance)}`}>
+                  <span className="text-xs text-muted-foreground">
+                    Performance
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${getQualityColor(qualityMetrics.performance)}`}
+                  >
                     {qualityMetrics.performance}
                   </span>
                 </div>
@@ -193,12 +236,19 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Maintainability</span>
-                  <span className={`text-xs font-medium ${getQualityColor(qualityMetrics.maintainability)}`}>
+                  <span className="text-xs text-muted-foreground">
+                    Maintainability
+                  </span>
+                  <span
+                    className={`text-xs font-medium ${getQualityColor(qualityMetrics.maintainability)}`}
+                  >
                     {qualityMetrics.maintainability}
                   </span>
                 </div>
-                <Progress value={qualityMetrics.maintainability} className="h-1" />
+                <Progress
+                  value={qualityMetrics.maintainability}
+                  className="h-1"
+                />
               </div>
             </div>
           </div>
@@ -210,14 +260,19 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
         <Card>
           <CardHeader>
             <CardTitle>Quality Issues</CardTitle>
-            <CardDescription>Issues found during quality analysis</CardDescription>
+            <CardDescription>
+              Issues found during quality analysis
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {/* Issues by Severity */}
               <div className="flex flex-wrap gap-2">
                 {Object.entries(issuesBySeverity).map(([severity, count]) => (
-                  <Badge key={severity} variant={getSeverityColor(severity) as any}>
+                  <Badge
+                    key={severity}
+                    variant={getSeverityColor(severity) as any}
+                  >
                     {count} {severity}
                   </Badge>
                 ))}
@@ -228,15 +283,29 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
                 <h4 className="text-sm font-medium">Recent Issues</h4>
                 <div className="space-y-2">
                   {qualityMetrics.issues.slice(0, 3).map((issue) => (
-                    <div key={issue.id} className="flex items-start gap-2 p-2 rounded-md bg-muted/50">
-                      {getQualityIcon(issue.severity === "critical" ? 0 : issue.severity === "high" ? 30 : 80)}
+                    <div
+                      key={issue.id}
+                      className="flex items-start gap-2 p-2 rounded-md bg-muted/50"
+                    >
+                      {getQualityIcon(
+                        issue.severity === "critical"
+                          ? 0
+                          : issue.severity === "high"
+                            ? 30
+                            : 80,
+                      )}
                       <div className="flex-1 space-y-1">
                         <p className="text-sm">{issue.message}</p>
                         {issue.recommendation && (
-                          <p className="text-xs text-muted-foreground">{issue.recommendation}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {issue.recommendation}
+                          </p>
                         )}
                       </div>
-                      <Badge variant={getSeverityColor(issue.severity) as any} className="text-xs">
+                      <Badge
+                        variant={getSeverityColor(issue.severity) as any}
+                        className="text-xs"
+                      >
                         {issue.severity}
                       </Badge>
                     </div>
@@ -248,5 +317,5 @@ export function StatisticsDashboard({ statistics, qualityMetrics }: StatisticsDa
         </Card>
       )}
     </div>
-  )
+  );
 }

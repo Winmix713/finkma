@@ -4,96 +4,96 @@
 
 export interface CodeContent {
   /** JSX/TSX code content */
-  jsx?: string
+  jsx?: string;
   /** CSS code content */
-  css?: string
+  css?: string;
   /** TypeScript definitions */
-  typescript?: string
+  typescript?: string;
   /** HTML content */
-  html?: string
+  html?: string;
 }
 
 export interface TabConfig {
   /** Unique identifier for the tab */
-  id: string
+  id: string;
   /** Display label for the tab */
-  label: string
+  label: string;
   /** Programming language for syntax highlighting */
-  language: string
+  language: string;
   /** File extension for downloads */
-  extension: string
+  extension: string;
   /** Content getter function */
-  getContent: (content: CodeContent) => string
+  getContent: (content: CodeContent) => string;
   /** Whether the tab should be visible */
-  isVisible: (content: CodeContent) => boolean
+  isVisible: (content: CodeContent) => boolean;
 }
 
 export interface CodePreviewProps {
   /** Code content to display */
-  content: CodeContent
+  content: CodeContent;
   /** Component name for file naming */
-  componentName?: string
+  componentName?: string;
   /** Default active tab */
-  defaultTab?: string
+  defaultTab?: string;
   /** Theme preference */
-  theme?: "light" | "dark" | "auto"
+  theme?: "light" | "dark" | "auto";
   /** Whether to show line numbers */
-  showLineNumbers?: boolean
+  showLineNumbers?: boolean;
   /** Maximum height for code display */
-  maxHeight?: string
+  maxHeight?: string;
   /** Custom CSS classes */
-  className?: string
+  className?: string;
   /** Callback when tab changes */
-  onTabChange?: (tabId: string) => void
+  onTabChange?: (tabId: string) => void;
   /** Callback when content is copied */
-  onCopy?: (content: string, tabId: string) => void
+  onCopy?: (content: string, tabId: string) => void;
   /** Callback when file is downloaded */
-  onDownload?: (filename: string, content: string) => void
+  onDownload?: (filename: string, content: string) => void;
   /** Error callback */
-  onError?: (error: Error) => void
+  onError?: (error: Error) => void;
 }
 
 export interface ClipboardState {
   /** Whether clipboard operation is in progress */
-  isLoading: boolean
+  isLoading: boolean;
   /** Success state with tab ID */
-  success: string | null
+  success: string | null;
   /** Error state */
-  error: string | null
+  error: string | null;
 }
 
 export interface DownloadState {
   /** Whether download is in progress */
-  isLoading: boolean
+  isLoading: boolean;
   /** Success state */
-  success: boolean
+  success: boolean;
   /** Error state */
-  error: string | null
+  error: string | null;
 }
 
 export interface ThemeState {
   /** Current theme */
-  theme: "light" | "dark"
+  theme: "light" | "dark";
   /** System theme preference */
-  systemTheme: "light" | "dark"
+  systemTheme: "light" | "dark";
   /** User preference */
-  userPreference: "light" | "dark" | "auto"
+  userPreference: "light" | "dark" | "auto";
 }
 
 export interface CodePreviewError extends Error {
   /** Error type for categorization */
-  type: "clipboard" | "download" | "syntax" | "theme" | "unknown"
+  type: "clipboard" | "download" | "syntax" | "theme" | "unknown";
   /** Additional context */
-  context?: Record<string, any>
+  context?: Record<string, any>;
 }
 
-export type SyntaxTheme = "light" | "dark" | "high-contrast"
+export type SyntaxTheme = "light" | "dark" | "high-contrast";
 
 export interface AccessibilityOptions {
   /** Whether to announce state changes */
-  announceChanges: boolean
+  announceChanges: boolean;
   /** Whether to use high contrast mode */
-  highContrast: boolean
+  highContrast: boolean;
   /** Whether to reduce motion */
-  reduceMotion: boolean
+  reduceMotion: boolean;
 }

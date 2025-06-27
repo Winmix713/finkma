@@ -1,17 +1,22 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Plus } from "lucide-react"
-import type { GeneratedComponent } from "@/types/figma"
+import { Badge } from "@/components/ui/badge";
+import { Plus } from "lucide-react";
+import type { GeneratedComponent } from "@/types/figma";
 
 interface ComponentListProps {
-  components: GeneratedComponent[]
-  selectedComponent: GeneratedComponent | null
-  onSelectComponent: (component: GeneratedComponent) => void
-  hasCustomCode: boolean
+  components: GeneratedComponent[];
+  selectedComponent: GeneratedComponent | null;
+  onSelectComponent: (component: GeneratedComponent) => void;
+  hasCustomCode: boolean;
 }
 
-export function ComponentList({ components, selectedComponent, onSelectComponent, hasCustomCode }: ComponentListProps) {
+export function ComponentList({
+  components,
+  selectedComponent,
+  onSelectComponent,
+  hasCustomCode,
+}: ComponentListProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {components.map((component) => (
@@ -27,8 +32,8 @@ export function ComponentList({ components, selectedComponent, onSelectComponent
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault()
-              onSelectComponent(component)
+              e.preventDefault();
+              onSelectComponent(component);
             }
           }}
           aria-pressed={selectedComponent?.id === component.id}
@@ -38,7 +43,9 @@ export function ComponentList({ components, selectedComponent, onSelectComponent
             <Badge variant="outline">{component.metadata.componentType}</Badge>
           </div>
 
-          <div className="text-sm text-gray-600 mb-3">Pontosság: {component.metadata.estimatedAccuracy}%</div>
+          <div className="text-sm text-gray-600 mb-3">
+            Pontosság: {component.metadata.estimatedAccuracy}%
+          </div>
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -52,7 +59,9 @@ export function ComponentList({ components, selectedComponent, onSelectComponent
                 }`}
                 aria-label={`Accessibility score: ${component.accessibility.score}%`}
               ></div>
-              <span className="text-xs text-gray-500">WCAG {component.accessibility.wcagCompliance}</span>
+              <span className="text-xs text-gray-500">
+                WCAG {component.accessibility.wcagCompliance}
+              </span>
             </div>
 
             {hasCustomCode && (
@@ -63,9 +72,11 @@ export function ComponentList({ components, selectedComponent, onSelectComponent
             )}
           </div>
 
-          <div className="mt-2 text-xs text-gray-500">Komplexitás: {component.metadata.complexity}</div>
+          <div className="mt-2 text-xs text-gray-500">
+            Komplexitás: {component.metadata.complexity}
+          </div>
         </div>
       ))}
     </div>
-  )
+  );
 }

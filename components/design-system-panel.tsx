@@ -1,41 +1,50 @@
-"use client"
+"use client";
 
 /**
  * Main Design System Panel component - Enterprise-grade design token management
  */
 
-import { useState, useCallback, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Palette, Download, Search, Settings, History, BarChart3, AlertTriangle, Loader2 } from "lucide-react"
+import { useState, useCallback, useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Palette,
+  Download,
+  Search,
+  Settings,
+  History,
+  BarChart3,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
 
-import type { FigmaApiResponse } from "@/types/figma"
-import type { ExtractionOptions } from "@/services/design-system-extractor"
-import { useDesignTokens } from "@/hooks/use-design-tokens"
+import type { FigmaApiResponse } from "@/types/figma";
+import type { ExtractionOptions } from "@/services/design-system-extractor";
+import { useDesignTokens } from "@/hooks/use-design-tokens";
 
 // Import sub-components (these would be implemented separately)
-import { TokenExtractor } from "./extraction/token-extractor"
-import { TokenPreviewTabs } from "./preview/token-preview-tabs"
-import { ExportConfiguration } from "./export/export-configuration"
-import { TokenSearch } from "./search-filter/token-search"
-import { TokenStatistics } from "./statistics/token-statistics"
-import { VersionHistory } from "./collaboration/version-history"
-import { ToastNotifications } from "./ui/toast-notifications"
+import { TokenExtractor } from "./extraction/token-extractor";
+import { TokenPreviewTabs } from "./preview/token-preview-tabs";
+import { ExportConfiguration } from "./export/export-configuration";
+import { TokenSearch } from "./search-filter/token-search";
+import { TokenStatistics } from "./statistics/token-statistics";
+import { VersionHistory } from "./collaboration/version-history";
+import { ToastNotifications } from "./ui/toast-notifications";
 
 interface DesignSystemPanelProps {
   /** Figma data to extract tokens from */
-  figmaData: FigmaApiResponse
+  figmaData: FigmaApiResponse;
   /** File key for the Figma file */
-  fileKey: string
+  fileKey: string;
   /** Initial extraction options */
-  initialExtractionOptions?: Partial<ExtractionOptions>
+  initialExtractionOptions?: Partial<ExtractionOptions>;
   /** Callback when tokens are exported */
-  onExport?: (format: string, content: string) => void
+  onExport?: (format: string, content: string) => void;
   /** Callback when errors occur */
-  onError?: (error: Error) => void
+  onError?: (error: Error) => void;
 }
 
 export function DesignSystemPanel({
@@ -80,10 +89,10 @@ export function DesignSystemPanel({
     enableValidation: true,
     autoSaveInterval: 30000,
     maxHistorySize: 50,
-  })
+  });
 
-  const [activeTab, setActiveTab] = useState("extraction")
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [activeTab, setActiveTab] = useState("extraction");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   // Default extraction options
   const defaultExtractionOptions: ExtractionOptions = {
@@ -95,42 +104,50 @@ export function DesignSystemPanel({
       prefix: "ds",
     },
     ...initialExtractionOptions,
-  }
+  };
 
-  const [extractionOptions, setExtractionOptions] = useState(defaultExtractionOptions)
+  const [extractionOptions, setExtractionOptions] = useState(
+    defaultExtractionOptions,
+  );
 
   // Handle token extraction
   const handleExtractTokens = useCallback(async () => {
     try {
-      await extractTokens(figmaData, extractionOptions)
+      await extractTokens(figmaData, extractionOptions);
     } catch (error) {
-      onError?.(error as Error)
+      onError?.(error as Error);
     }
-  }, [figmaData, extractionOptions, extractTokens, onError])
+  }, [figmaData, extractionOptions, extractTokens, onError]);
 
   // Handle export
   const handleExport = useCallback(
     (format: string, content: string) => {
-      onExport?.(format, content)
+      onExport?.(format, content);
     },
     [onExport],
-  )
+  );
 
   // Compute statistics
   const statistics = useMemo(() => {
-    if (!collection) return null
+    if (!collection) return null;
 
     const tokensByCategory = collection.tokens.reduce(
       (acc, token) => {
-        acc[token.category] = (acc[token.category] || 0) + 1
-        return acc
+        acc[token.category] = (acc[token.category] || 0) + 1;
+        return acc;
       },
       {} as Record<string, number>,
-    )
+    );
 
-    const validTokens = collection.tokens.filter((token) => token.validation.isValid).length
-    const invalidTokens = collection.tokens.filter((token) => !token.validation.isValid).length
-    const warningTokens = collection.tokens.filter((token) => token.validation.warnings.length > 0).length
+    const validTokens = collection.tokens.filter(
+      (token) => token.validation.isValid,
+    ).length;
+    const invalidTokens = collection.tokens.filter(
+      (token) => !token.validation.isValid,
+    ).length;
+    const warningTokens = collection.tokens.filter(
+      (token) => token.validation.warnings.length > 0,
+    ).length;
 
     return {
       totalTokens: collection.tokens.length,
@@ -138,17 +155,24 @@ export function DesignSystemPanel({
       validTokens,
       invalidTokens,
       warningTokens,
-      validationRate: collection.tokens.length > 0 ? (validTokens / collection.tokens.length) * 100 : 0,
-    }
-  }, [collection])
+      validationRate:
+        collection.tokens.length > 0
+          ? (validTokens / collection.tokens.length) * 100
+          : 0,
+    };
+  }, [collection]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Design System Panel</h2>
-          <p className="text-gray-600">Extract, manage, and export design tokens from {figmaData.name}</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Design System Panel
+          </h2>
+          <p className="text-gray-600">
+            Extract, manage, and export design tokens from {figmaData.name}
+          </p>
         </div>
 
         {/* Quick Actions */}
@@ -182,7 +206,12 @@ export function DesignSystemPanel({
                 <div key={index}>{error}</div>
               ))}
             </div>
-            <Button variant="ghost" size="sm" onClick={clearErrors} className="mt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearErrors}
+              className="mt-2"
+            >
               Clear Errors
             </Button>
           </AlertDescription>
@@ -201,28 +230,36 @@ export function DesignSystemPanel({
 
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-green-600">{statistics.validTokens}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {statistics.validTokens}
+              </div>
               <div className="text-sm text-gray-600">Valid</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-red-600">{statistics.invalidTokens}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {statistics.invalidTokens}
+              </div>
               <div className="text-sm text-gray-600">Invalid</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold text-yellow-600">{statistics.warningTokens}</div>
+              <div className="text-2xl font-bold text-yellow-600">
+                {statistics.warningTokens}
+              </div>
               <div className="text-sm text-gray-600">Warnings</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold">{Math.round(statistics.validationRate)}%</div>
+              <div className="text-2xl font-bold">
+                {Math.round(statistics.validationRate)}%
+              </div>
               <div className="text-sm text-gray-600">Valid Rate</div>
             </CardContent>
           </Card>
@@ -239,7 +276,10 @@ export function DesignSystemPanel({
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="extraction" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="extraction"
+            className="flex items-center space-x-2"
+          >
             <Settings className="w-4 h-4" />
             <span>Extract</span>
           </TabsTrigger>
@@ -255,7 +295,10 @@ export function DesignSystemPanel({
             <Search className="w-4 h-4" />
             <span>Search</span>
           </TabsTrigger>
-          <TabsTrigger value="statistics" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="statistics"
+            className="flex items-center space-x-2"
+          >
             <BarChart3 className="w-4 h-4" />
             <span>Stats</span>
           </TabsTrigger>
@@ -314,9 +357,12 @@ export function DesignSystemPanel({
             <Card>
               <CardContent className="p-8 text-center">
                 <Palette className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Tokens Available</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Tokens Available
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  Extract design tokens from your Figma file to start previewing them.
+                  Extract design tokens from your Figma file to start previewing
+                  them.
                 </p>
                 <Button onClick={() => setActiveTab("extraction")}>
                   <Settings className="w-4 h-4 mr-2" />
@@ -339,8 +385,12 @@ export function DesignSystemPanel({
             <Card>
               <CardContent className="p-8 text-center">
                 <Download className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Tokens to Export</h3>
-                <p className="text-gray-600 mb-4">Extract design tokens first to enable export functionality.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Tokens to Export
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Extract design tokens first to enable export functionality.
+                </p>
                 <Button onClick={() => setActiveTab("extraction")}>
                   <Settings className="w-4 h-4 mr-2" />
                   Extract Tokens
@@ -362,14 +412,20 @@ export function DesignSystemPanel({
               selectedTokens={selection.selectedTokens}
               onSelectToken={selectToken}
               showAdvancedFilters={showAdvancedFilters}
-              onToggleAdvancedFilters={() => setShowAdvancedFilters(!showAdvancedFilters)}
+              onToggleAdvancedFilters={() =>
+                setShowAdvancedFilters(!showAdvancedFilters)
+              }
             />
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
                 <Search className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Tokens to Search</h3>
-                <p className="text-gray-600 mb-4">Extract design tokens to enable search and filtering.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Tokens to Search
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Extract design tokens to enable search and filtering.
+                </p>
                 <Button onClick={() => setActiveTab("extraction")}>
                   <Settings className="w-4 h-4 mr-2" />
                   Extract Tokens
@@ -382,13 +438,22 @@ export function DesignSystemPanel({
         {/* Statistics Tab */}
         <TabsContent value="statistics" className="space-y-6">
           {collection && statistics ? (
-            <TokenStatistics collection={collection} statistics={statistics} displayTokens={displayTokens} />
+            <TokenStatistics
+              collection={collection}
+              statistics={statistics}
+              displayTokens={displayTokens}
+            />
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
                 <BarChart3 className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Statistics Available</h3>
-                <p className="text-gray-600 mb-4">Extract design tokens to view detailed statistics and analytics.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No Statistics Available
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Extract design tokens to view detailed statistics and
+                  analytics.
+                </p>
                 <Button onClick={() => setActiveTab("extraction")}>
                   <Settings className="w-4 h-4 mr-2" />
                   Extract Tokens
@@ -400,12 +465,17 @@ export function DesignSystemPanel({
 
         {/* History Tab */}
         <TabsContent value="history" className="space-y-6">
-          <VersionHistory history={history} onUndo={undo} onRedo={redo} collection={collection} />
+          <VersionHistory
+            history={history}
+            onUndo={undo}
+            onRedo={redo}
+            collection={collection}
+          />
         </TabsContent>
       </Tabs>
 
       {/* Toast Notifications */}
       <ToastNotifications />
     </div>
-  )
+  );
 }

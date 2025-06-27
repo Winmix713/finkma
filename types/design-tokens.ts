@@ -4,25 +4,25 @@
 
 export interface DesignToken {
   /** Unique identifier for the token */
-  id: string
+  id: string;
   /** Human-readable name */
-  name: string
+  name: string;
   /** Token category */
-  category: TokenCategory
+  category: TokenCategory;
   /** Token type within category */
-  type: string
+  type: string;
   /** Token value */
-  value: TokenValue
+  value: TokenValue;
   /** Description or usage notes */
-  description?: string
+  description?: string;
   /** Figma node ID this token was extracted from */
-  figmaNodeId?: string
+  figmaNodeId?: string;
   /** Token metadata */
-  metadata: TokenMetadata
+  metadata: TokenMetadata;
   /** Usage statistics */
-  usage?: TokenUsage
+  usage?: TokenUsage;
   /** Validation status */
-  validation: ValidationStatus
+  validation: ValidationStatus;
 }
 
 export type TokenCategory =
@@ -35,28 +35,28 @@ export type TokenCategory =
   | "opacity"
   | "z-index"
   | "animation"
-  | "breakpoint"
+  | "breakpoint";
 
 export interface ColorToken extends DesignToken {
-  category: "color"
-  value: ColorValue
-  accessibility: ColorAccessibility
+  category: "color";
+  value: ColorValue;
+  accessibility: ColorAccessibility;
 }
 
 export interface TypographyToken extends DesignToken {
-  category: "typography"
-  value: TypographyValue
-  webFont?: WebFontInfo
+  category: "typography";
+  value: TypographyValue;
+  webFont?: WebFontInfo;
 }
 
 export interface SpacingToken extends DesignToken {
-  category: "spacing"
-  value: SpacingValue
+  category: "spacing";
+  value: SpacingValue;
 }
 
 export interface ShadowToken extends DesignToken {
-  category: "shadow"
-  value: ShadowValue
+  category: "shadow";
+  value: ShadowValue;
 }
 
 export type TokenValue =
@@ -66,188 +66,188 @@ export type TokenValue =
   | ShadowValue
   | BorderRadiusValue
   | OpacityValue
-  | ZIndexValue
+  | ZIndexValue;
 
 export interface ColorValue {
-  hex: string
-  rgb: { r: number; g: number; b: number }
-  hsl: { h: number; s: number; l: number }
-  alpha?: number
+  hex: string;
+  rgb: { r: number; g: number; b: number };
+  hsl: { h: number; s: number; l: number };
+  alpha?: number;
 }
 
 export interface TypographyValue {
-  fontFamily: string
-  fontSize: number
-  fontWeight: number | string
-  lineHeight: number | string
-  letterSpacing?: number
-  textTransform?: string
+  fontFamily: string;
+  fontSize: number;
+  fontWeight: number | string;
+  lineHeight: number | string;
+  letterSpacing?: number;
+  textTransform?: string;
 }
 
 export interface SpacingValue {
-  value: number
-  unit: "px" | "rem" | "em" | "%"
+  value: number;
+  unit: "px" | "rem" | "em" | "%";
 }
 
 export interface ShadowValue {
-  offsetX: number
-  offsetY: number
-  blurRadius: number
-  spreadRadius?: number
-  color: ColorValue
-  inset?: boolean
+  offsetX: number;
+  offsetY: number;
+  blurRadius: number;
+  spreadRadius?: number;
+  color: ColorValue;
+  inset?: boolean;
 }
 
 export interface BorderRadiusValue {
-  value: number
-  unit: "px" | "rem" | "em" | "%"
+  value: number;
+  unit: "px" | "rem" | "em" | "%";
 }
 
 export interface OpacityValue {
-  value: number // 0-1
+  value: number; // 0-1
 }
 
 export interface ZIndexValue {
-  value: number
+  value: number;
 }
 
 export interface TokenMetadata {
   /** When the token was created */
-  createdAt: Date
+  createdAt: Date;
   /** When the token was last modified */
-  updatedAt: Date
+  updatedAt: Date;
   /** Who created the token */
-  createdBy?: string
+  createdBy?: string;
   /** Tags for organization */
-  tags: string[]
+  tags: string[];
   /** Custom properties */
-  custom: Record<string, any>
+  custom: Record<string, any>;
 }
 
 export interface TokenUsage {
   /** Number of times used in designs */
-  usageCount: number
+  usageCount: number;
   /** Components using this token */
-  usedInComponents: string[]
+  usedInComponents: string[];
   /** Last usage date */
-  lastUsed?: Date
+  lastUsed?: Date;
 }
 
 export interface ValidationStatus {
   /** Whether the token is valid */
-  isValid: boolean
+  isValid: boolean;
   /** Validation errors */
-  errors: ValidationError[]
+  errors: ValidationError[];
   /** Validation warnings */
-  warnings: ValidationWarning[]
+  warnings: ValidationWarning[];
   /** Last validation date */
-  lastValidated: Date
+  lastValidated: Date;
 }
 
 export interface ValidationError {
-  code: string
-  message: string
-  severity: "error" | "warning" | "info"
-  suggestion?: string
+  code: string;
+  message: string;
+  severity: "error" | "warning" | "info";
+  suggestion?: string;
 }
 
 export interface ValidationWarning {
-  code: string
-  message: string
-  suggestion?: string
+  code: string;
+  message: string;
+  suggestion?: string;
 }
 
 export interface ColorAccessibility {
   /** WCAG contrast ratio */
-  contrastRatio?: number
+  contrastRatio?: number;
   /** WCAG compliance level */
-  wcagLevel?: "A" | "AA" | "AAA"
+  wcagLevel?: "A" | "AA" | "AAA";
   /** Color blindness simulation results */
-  colorBlindness: ColorBlindnessInfo
+  colorBlindness: ColorBlindnessInfo;
 }
 
 export interface ColorBlindnessInfo {
-  protanopia: string
-  deuteranopia: string
-  tritanopia: string
-  achromatopsia: string
+  protanopia: string;
+  deuteranopia: string;
+  tritanopia: string;
+  achromatopsia: string;
 }
 
 export interface WebFontInfo {
   /** Font family name */
-  family: string
+  family: string;
   /** Available weights */
-  weights: number[]
+  weights: number[];
   /** Available styles */
-  styles: string[]
+  styles: string[];
   /** Font loading strategy */
-  loading: "swap" | "block" | "fallback" | "optional"
+  loading: "swap" | "block" | "fallback" | "optional";
   /** Font display value */
-  display: string
+  display: string;
 }
 
 export interface TokenCollection {
   /** Collection identifier */
-  id: string
+  id: string;
   /** Collection name */
-  name: string
+  name: string;
   /** Collection description */
-  description?: string
+  description?: string;
   /** Tokens in this collection */
-  tokens: DesignToken[]
+  tokens: DesignToken[];
   /** Collection metadata */
-  metadata: CollectionMetadata
+  metadata: CollectionMetadata;
 }
 
 export interface CollectionMetadata {
   /** Figma file key */
-  figmaFileKey?: string
+  figmaFileKey?: string;
   /** Figma file name */
-  figmaFileName?: string
+  figmaFileName?: string;
   /** Extraction date */
-  extractedAt: Date
+  extractedAt: Date;
   /** Version information */
-  version: string
+  version: string;
   /** Collection tags */
-  tags: string[]
+  tags: string[];
 }
 
 export interface TokenFilter {
   /** Search query */
-  query?: string
+  query?: string;
   /** Filter by categories */
-  categories?: TokenCategory[]
+  categories?: TokenCategory[];
   /** Filter by tags */
-  tags?: string[]
+  tags?: string[];
   /** Filter by validation status */
-  validationStatus?: "valid" | "invalid" | "warning"
+  validationStatus?: "valid" | "invalid" | "warning";
   /** Custom filters */
-  custom?: Record<string, any>
+  custom?: Record<string, any>;
 }
 
 export interface TokenSort {
   /** Sort field */
-  field: "name" | "category" | "createdAt" | "updatedAt" | "usageCount"
+  field: "name" | "category" | "createdAt" | "updatedAt" | "usageCount";
   /** Sort direction */
-  direction: "asc" | "desc"
+  direction: "asc" | "desc";
 }
 
 export interface TokenSearchResult {
   /** Matching tokens */
-  tokens: DesignToken[]
+  tokens: DesignToken[];
   /** Total count */
-  totalCount: number
+  totalCount: number;
   /** Search metadata */
-  metadata: SearchMetadata
+  metadata: SearchMetadata;
 }
 
 export interface SearchMetadata {
   /** Search query */
-  query: string
+  query: string;
   /** Search duration in ms */
-  duration: number
+  duration: number;
   /** Applied filters */
-  filters: TokenFilter
+  filters: TokenFilter;
   /** Applied sorting */
-  sort: TokenSort
+  sort: TokenSort;
 }

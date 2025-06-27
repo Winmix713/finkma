@@ -1,22 +1,30 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, CheckCircle, XCircle, RefreshCw, Trash2, Clock, FileText } from "lucide-react"
-import type { ProcessingResult, ProcessingError } from "@/types/figma"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  Trash2,
+  Clock,
+  FileText,
+} from "lucide-react";
+import type { ProcessingResult, ProcessingError } from "@/types/figma";
 
 interface ProcessingProgressProps {
-  isProcessing: boolean
-  isLoading: boolean
-  progress: number
-  currentFile?: string
-  processedFiles: ProcessingResult[]
-  errors: ProcessingError[]
-  onRetry: (fileId: string) => void
-  onClear: () => void
+  isProcessing: boolean;
+  isLoading: boolean;
+  progress: number;
+  currentFile?: string;
+  processedFiles: ProcessingResult[];
+  errors: ProcessingError[];
+  onRetry: (fileId: string) => void;
+  onClear: () => void;
 }
 
 export function ProcessingProgress({
@@ -29,10 +37,10 @@ export function ProcessingProgress({
   onRetry,
   onClear,
 }: ProcessingProgressProps) {
-  const totalFiles = processedFiles.length + errors.length
-  const successCount = processedFiles.length
-  const errorCount = errors.length
-  const successRate = totalFiles > 0 ? (successCount / totalFiles) * 100 : 0
+  const totalFiles = processedFiles.length + errors.length;
+  const successCount = processedFiles.length;
+  const errorCount = errors.length;
+  const successRate = totalFiles > 0 ? (successCount / totalFiles) * 100 : 0;
 
   return (
     <Card>
@@ -62,7 +70,9 @@ export function ProcessingProgress({
               <span className="text-sm font-medium">
                 {currentFile ? `Processing: ${currentFile}` : "Processing..."}
               </span>
-              <span className="text-sm text-gray-500">{Math.round(progress)}%</span>
+              <span className="text-sm text-gray-500">
+                {Math.round(progress)}%
+              </span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -72,11 +82,15 @@ export function ProcessingProgress({
         {totalFiles > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{successCount}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {successCount}
+              </div>
               <div className="text-xs text-gray-600">Successful</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{errorCount}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {errorCount}
+              </div>
               <div className="text-xs text-gray-600">Failed</div>
             </div>
             <div className="text-center">
@@ -84,7 +98,9 @@ export function ProcessingProgress({
               <div className="text-xs text-gray-600">Total</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold">{Math.round(successRate)}%</div>
+              <div className="text-2xl font-bold">
+                {Math.round(successRate)}%
+              </div>
               <div className="text-xs text-gray-600">Success Rate</div>
             </div>
           </div>
@@ -99,7 +115,10 @@ export function ProcessingProgress({
             </h4>
             <div className="space-y-1 max-h-32 overflow-y-auto">
               {processedFiles.slice(-5).map((result) => (
-                <div key={result.id} className="flex items-center justify-between p-2 bg-green-50 rounded text-sm">
+                <div
+                  key={result.id}
+                  className="flex items-center justify-between p-2 bg-green-50 rounded text-sm"
+                >
                   <span className="truncate flex-1">{result.data.name}</span>
                   <div className="flex items-center space-x-2">
                     <Badge variant="secondary" className="text-xs">
@@ -129,7 +148,11 @@ export function ProcessingProgress({
                       <div className="font-medium truncate">{error.url}</div>
                       <div className="text-xs">{error.error}</div>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={() => onRetry(error.id)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRetry(error.id)}
+                    >
                       <RefreshCw className="w-4 h-4" />
                     </Button>
                   </AlertDescription>
@@ -140,5 +163,5 @@ export function ProcessingProgress({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

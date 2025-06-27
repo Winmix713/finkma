@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Wifi, WifiOff, Clock, User, Zap } from "lucide-react"
-import type { RateLimit, FigmaUser } from "@/types/figma-api"
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Wifi, WifiOff, Clock, User, Zap } from "lucide-react";
+import type { RateLimit, FigmaUser } from "@/types/figma-api";
 
 interface ConnectionStatusProps {
-  isConnected: boolean
-  isConnecting: boolean
-  connectionError?: string
-  lastConnectedAt?: Date
-  rateLimit?: RateLimit
-  userInfo?: FigmaUser
+  isConnected: boolean;
+  isConnecting: boolean;
+  connectionError?: string;
+  lastConnectedAt?: Date;
+  rateLimit?: RateLimit;
+  userInfo?: FigmaUser;
 }
 
 export function ConnectionStatus({
@@ -24,17 +24,17 @@ export function ConnectionStatus({
   userInfo,
 }: ConnectionStatusProps) {
   const getRateLimitColor = () => {
-    if (!rateLimit) return "bg-gray-200"
-    const percentage = (rateLimit.remaining / rateLimit.limit) * 100
-    if (percentage > 50) return "bg-green-500"
-    if (percentage > 20) return "bg-yellow-500"
-    return "bg-red-500"
-  }
+    if (!rateLimit) return "bg-gray-200";
+    const percentage = (rateLimit.remaining / rateLimit.limit) * 100;
+    if (percentage > 50) return "bg-green-500";
+    if (percentage > 20) return "bg-yellow-500";
+    return "bg-red-500";
+  };
 
   const getRateLimitPercentage = () => {
-    if (!rateLimit) return 0
-    return (rateLimit.remaining / rateLimit.limit) * 100
-  }
+    if (!rateLimit) return 0;
+    return (rateLimit.remaining / rateLimit.limit) * 100;
+  };
 
   return (
     <Card className="w-full max-w-sm">
@@ -51,10 +51,16 @@ export function ConnectionStatus({
                 <WifiOff className="w-4 h-4 text-red-600" />
               )}
               <span className="text-sm font-medium">
-                {isConnecting ? "Connecting..." : isConnected ? "Connected" : "Disconnected"}
+                {isConnecting
+                  ? "Connecting..."
+                  : isConnected
+                    ? "Connected"
+                    : "Disconnected"}
               </span>
             </div>
-            <Badge variant={isConnected ? "default" : "destructive"}>{isConnected ? "Online" : "Offline"}</Badge>
+            <Badge variant={isConnected ? "default" : "destructive"}>
+              {isConnected ? "Online" : "Offline"}
+            </Badge>
           </div>
 
           {/* User Info */}
@@ -69,7 +75,9 @@ export function ConnectionStatus({
           {lastConnectedAt && (
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4 text-gray-500" />
-              <span className="text-sm text-gray-600">{lastConnectedAt.toLocaleTimeString()}</span>
+              <span className="text-sm text-gray-600">
+                {lastConnectedAt.toLocaleTimeString()}
+              </span>
             </div>
           )}
 
@@ -86,14 +94,20 @@ export function ConnectionStatus({
                 </span>
               </div>
               <Progress value={getRateLimitPercentage()} className="h-2" />
-              <div className="text-xs text-gray-500">Resets at {rateLimit.reset.toLocaleTimeString()}</div>
+              <div className="text-xs text-gray-500">
+                Resets at {rateLimit.reset.toLocaleTimeString()}
+              </div>
             </div>
           )}
 
           {/* Connection Error */}
-          {connectionError && <div className="text-sm text-red-600 bg-red-50 p-2 rounded">{connectionError}</div>}
+          {connectionError && (
+            <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+              {connectionError}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
